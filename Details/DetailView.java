@@ -2,8 +2,13 @@
  import java.awt.*;
  import java.awt.event.*;
 
- public class DetailView{
+ public class DetailsView{
  	public static void main(String []args){
+ 		private JFrame = frame;
+ 		private JPanel = detailspanel;
+
+
+
 
  	JFrame frame = new JFrame("Details");
  	frame.setSize(400,700);

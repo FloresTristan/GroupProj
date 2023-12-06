@@ -1,19 +1,19 @@
-package finals.exam.cite;
+package github.group.login;
 
 
 import javax.swing.*;
 
 
 
-public class VehicleRegistrationController{
+public class VehicleLoginController{
 	private JFrame frame;
-	private VehicleRegistrationView view;
-	private VehicleRegistrationModel model;
+	private VehicleLoginView view;
+	//private VehicleRegistrationModel model;
 
 
-	public VehicleRegistrationController(JFrame frame){
+	public VehicleLoginController(JFrame frame){
 		this.frame = frame;
-		this.view = new VehicleRegistrationView(frame, this);
+		this.view = new VehicleLoginView(frame, this);
 		initFrame();
 	}
 

@@ -4,15 +4,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-class VehicleRegistrationView{
+class VehicleLoginView{
 	private JFrame frame;
-	private VehicleRegistrationController control;
+	private VehicleLoginController control;
 	private JLabel reg, name, passLabel;
 	private JTextField nameField;
     private JPasswordField passwordField;
     private JButton loginButton, regBtn;
 
-	public VehicleRegistrationView(JFrame frame, VehicleRegistrationController control){
+	public VehicleLoginView(JFrame frame, VehicleLoginController control){
 		this.frame = frame;
 		this.control = control;
 		initPanel();

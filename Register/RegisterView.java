@@ -1,4 +1,4 @@
-package finals.exam.register;
+package github.group.register;
 
 import javax.swing.*;
 import java.awt.event.*;
@@ -15,6 +15,20 @@ class RegisterView{
 	}
 
 	public void initRegView(){
+		JPanel logPanel = new JPanel();
+		logPanel.setBounds(0,0,400,50);
+		logPanel.setBackground(new Color(40, 145, 242));
+		logPanel.setLayout(null);
+		frame.add(logPanel);
+
+		
+		JPanel loginPanel = new JPanel();
+		loginPanel.setBounds(0,0,400,700);
+		loginPanel.setBackground(new Color(109, 198, 248));
+		loginPanel.setLayout(null);
+		frame.add(loginPanel);
+
+
 		JLabel loginLabel = new JLabel("CITE Vehicle Registration Form");
 		loginLabel.setBounds(45,-20,300,100);
 		loginLabel.setFont(new Font("Arial", Font.BOLD,20));

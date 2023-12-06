@@ -1,4 +1,4 @@
-package finals.exam.register;
+package github.group.register;
 
 import javax.swing.*;
 

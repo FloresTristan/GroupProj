@@ -4,18 +4,23 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
 
-class RegisterView{
-	private JFrame frame;
-	private RegisterController regCon;
+class RegisterView {
+    private JFrame frame;
+    private RegisterController regCon;
 
-	public RegisterView(JFrame frame, RegisterController regCon){
-		this.frame = frame;
-		this.regCon = regCon;
-		initRegView();
-	}
+    public RegisterView(JFrame frame, RegisterController regCon) {
+        this.frame = frame;
+        this.regCon = regCon;
+        initRegView();
+    }
 
+<<<<<<< HEAD
 	public void initRegView(){
 		JPanel logPanel = new JPanel();
+=======
+    public void initRegView() {
+        JPanel logPanel = new JPanel();
+>>>>>>> 5cd421c86cb20079773daf8fa2c1179b1dc99901
         logPanel.setBounds(0, 0, 400, 50);
         logPanel.setBackground(new Color(40, 145, 242));
         logPanel.setLayout(null);
@@ -110,11 +115,38 @@ class RegisterView{
             }
         });
         loginPanel.add(submitBttn);
+<<<<<<< HEAD
 
         JButton cnclBttn = new JButton("cancel");
         cnclBttn.setBounds(215, 560, 100, 40);
         cnclBttn.setBackground(new Color(248, 217, 109));
         loginPanel.add(cnclBttn);
+=======
+>>>>>>> 5cd421c86cb20079773daf8fa2c1179b1dc99901
 
-	}
+        JButton cnclBttn = new JButton("cancel");
+        cnclBttn.setBounds(215, 560, 100, 40);
+        cnclBttn.setBackground(new Color(248, 217, 109));
+        loginPanel.add(cnclBttn);
+    }
+}
+
+class RegisterController {
+    // Your controller logic goes here
+}
+
+public class MainClass {
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                JFrame frame = new JFrame("Vehicle Registration");
+                frame.setSize(400, 700);
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                RegisterController regCon = new RegisterController();
+                new RegisterView(frame, regCon);
+                frame.setLayout(null);
+                frame.setVisible(true);
+            }
+        });
+    }
 }

@@ -7,7 +7,9 @@ public class RegisterController{
 
 	public RegisterController(JFrame frame){
 		this.frame = frame;
+
 		new RegisterView(frame, this);
+		
 
 	}
 }

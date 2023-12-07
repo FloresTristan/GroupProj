@@ -43,29 +43,29 @@ class DetailsView{
  	area.setEditable(false);
  	detailspanel.add(area);
 
- 	detaillabel = new JLabel("DETAILS");
+ 	detaillabel = new JLabel("Vehicle Details");
  	detaillabel.setBounds(120,4,100,40);
- 	detaillabel.setFont(new Font("Arial", Font.BOLD,20));
+ 	detaillabel.setFont(new Font("Abyssinica SIL", Font.BOLD,20));
  	area.add(detaillabel);
 
  	makelabel = new JLabel("Make");
- 	makelabel.setBounds(40,100,100,40);
- 	makelabel.setFont(new Font("Arial", Font.BOLD,20));
+ 	makelabel.setBounds(20,100,100,40);
+ 	makelabel.setFont(new Font("Abyssinica SIL", Font.BOLD,14));
  	area.add(makelabel); 
 	
 	typelabel = new JLabel("Type");
- 	typelabel.setBounds(210,100,100,40);
- 	typelabel.setFont(new Font("Arial", Font.BOLD,20));
+ 	typelabel.setBounds(20,160,100,40);
+ 	typelabel.setFont(new Font("Abyssinica SIL", Font.BOLD,20));
  	area.add(typelabel);
 
  	stickerlabel = new JLabel("Sticker No.");
- 	stickerlabel.setBounds(100,250,150,40);
- 	stickerlabel.setFont(new Font("Arial", Font.BOLD,20));
+ 	stickerlabel.setBounds(20,250,150,40);
+ 	stickerlabel.setFont(new Font("Abyssinica SIL", Font.BOLD,20));
  	area.add(stickerlabel);
 
  	passwordlabel = new JLabel("Password:");
  	passwordlabel.setBounds(5,450,150,40);
- 	stickerlabel.setFont(new Font("Arial", Font.BOLD,20));
+ 	stickerlabel.setFont(new Font("Abyssinica SIL", Font.BOLD,20));
  	area.add(passwordlabel);
 
 

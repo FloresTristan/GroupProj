@@ -8,6 +8,7 @@ class RegisterView{
 	private JFrame frame;
 	private RegisterController regCon;
 
+
 	public RegisterView(JFrame frame, RegisterController regCon){
 		this.frame = frame;
 		this.regCon = regCon;
@@ -91,14 +92,24 @@ class RegisterView{
 		loginPanel.add(licenseField);
 
 		JButton submitBttn = new JButton("submit");
-		submitBttn.setBounds(60,560,75,40);
+		submitBttn.setBounds(60,560,100,40);
+		submitBttn.setBackground(new Color(248,217,109));
+		submitBttn.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				int result= JOptionPane.showConfirmDialog(frame, "Do you want to submit?");
+				if(result==JOptionPane.YES_OPTION){
+					JOptionPane.showMessageDialog(frame, "You are now Registered!");
+				}
+			}
+		});
 		loginPanel.add(submitBttn);
 
 		
 			
 
 		JButton cnclBttn = new JButton("cancel");
-		cnclBttn.setBounds(215,560,75,40);
+		cnclBttn.setBounds(215,560,100,40);
+		cnclBttn.setBackground(new Color(248,217,109));
 		loginPanel.add(cnclBttn);
 
 	}

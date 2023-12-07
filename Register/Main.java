@@ -91,20 +91,14 @@ public class Main{
 
 		JButton submitBttn = new JButton("submit");
 		submitBttn.setBounds(40,560,100,40);
-		submitBttn.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
-				int result= JOptionPane.showConfirmDialog(frame, "Do you want to submit?");
-				if(result==JOptionPane.YES_OPTION){
-					JOptionPane.showMessageDialog(frame, "You are now Registered!");
-				}
-			}
-		});
+		submitBttn.setBackground(new Color(248,217,109));
 		loginPanel.add(submitBttn);
 		
 			
 
 		JButton cnclBttn = new JButton("cancel");
 		cnclBttn.setBounds(215,560,100,40);
+		cnclBttn.setBackground(new Color(248,217,109));
 		loginPanel.add(cnclBttn);
 
 

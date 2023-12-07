@@ -26,6 +26,7 @@ public class VehicleLoginController{
 		frame.setSize(400,700);
 		frame.setLayout(null);
 		frame.setResizable(false);
+		frame.setUndecorated(false);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 

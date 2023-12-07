@@ -1,8 +1,10 @@
+ package details;
+
  import javax.swing.*;
  import java.awt.*;
  import java.awt.event.*;
 
-public class DetailsView{
+class DetailsView{
 
  		
  		private JFrame frame;
@@ -10,19 +12,20 @@ public class DetailsView{
  		private JTextArea area;
  		private JLabel detaillabel, makelabel, typelabel, stickerlabel, passwordlabel;
  		private JButton backbutton, quitbutton;
+ 		private DetailsController detcon;
 
- 		public DetailsView(JFrame frame){
+
+ 		public DetailsView(JFrame frame, DetailsController detcon){
  			this.frame = frame;
- 			initPanel();
+ 			this.detcon = detcon;
+ 			initView();
 
  
  	
  	}
  	
- 	public void initPanel() {
-
-
- 	frame = new JFrame("Details");
+ 	public void initView(){
+ 	JFrame frame = new JFrame("Details");
  	frame.setSize(400,700);
  	frame.setLayout(null);
  	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

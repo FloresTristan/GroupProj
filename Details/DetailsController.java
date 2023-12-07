@@ -1,10 +1,23 @@
- package github.group.details;
+ package details;
 
 import javax.swing.*;
 
 public class DetailsController{
-	public static void main(String args[]){
+	
+	private JFrame frame;
 
+	public DetailsController(JFrame frame){
+
+		this.frame = frame;
+
+
+
+		new DetailsView(frame, this); 
+
+
+
+
+	}
 
 
 
@@ -16,10 +29,3 @@ public class DetailsController{
 
 		
 	}
-
-
-
-
-
-
-}

@@ -2,7 +2,7 @@ package github.group.login;
 
 
 import javax.swing.*;
-
+import github.group.register.RegisterController;
 
 
 public class VehicleLoginController{
@@ -15,6 +15,10 @@ public class VehicleLoginController{
 		this.frame = frame;
 		this.view = new VehicleLoginView(frame, this);
 		initFrame();
+	}
+	public void showRegView(JFrame frame){
+		new RegisterController(frame);
+
 	}
 
 

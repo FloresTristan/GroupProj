@@ -5,18 +5,18 @@ import java.awt.*;
 import java.awt.event.*;
 
 class VehicleLoginView{
-	private JFrame frame;
-	private VehicleLoginController control;
-	private JLabel reg, name, passLabel;
-	private JTextField nameField;
+    private JFrame frame;
+    private VehicleLoginController control;
+    private JLabel reg, name, passLabel;
+    private JTextField nameField;
     private JPasswordField passwordField;
     private JButton loginButton, regBtn;
 
-	public VehicleLoginView(JFrame frame, VehicleLoginController control){
-		this.frame = frame;
-		this.control = control;
-		initPanel();
-	}
+    public VehicleLoginView(JFrame frame, VehicleLoginController control){
+        this.frame = frame;
+        this.control = control;
+        initPanel();
+    }
 
 
 
@@ -57,10 +57,19 @@ public void initPanel() {
 
         loginButton = new JButton("Login");
         loginButton.setBounds(30, 350, 100, 30);
+        loginButton.setBackground(new Color(248,217,109));
         regPanel.add(loginButton);
 
-        regBtn = new JButton("Login");
+        regBtn = new JButton("Register");
         regBtn.setBounds(240, 350, 100, 30);
+        regBtn.setBackground(new Color(248,217,109));
         regPanel.add(regBtn);
+        regBtn.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                frame.getContentPane().removeAll();
+                frame.repaint();
+                control.showRegView(frame);
+            }
+        });
     }
 }

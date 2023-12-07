@@ -1,4 +1,4 @@
-
+//
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -10,6 +10,7 @@ public class Main{
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(400,700);
 		frame.setLayout(null);
+		frame.setLocationRelativeTo(null);
 
 
 
@@ -89,13 +90,21 @@ public class Main{
 		loginPanel.add(licenseField);
 
 		JButton submitBttn = new JButton("submit");
-		submitBttn.setBounds(60,560,75,40);
+		submitBttn.setBounds(40,560,100,40);
+		submitBttn.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				int result= JOptionPane.showConfirmDialog(frame, "Do you want to submit?");
+				if(result==JOptionPane.YES_OPTION){
+					JOptionPane.showMessageDialog(frame, "You are now Registered!");
+				}
+			}
+		});
 		loginPanel.add(submitBttn);
 		
 			
 
 		JButton cnclBttn = new JButton("cancel");
-		cnclBttn.setBounds(215,560,75,40);
+		cnclBttn.setBounds(215,560,100,40);
 		loginPanel.add(cnclBttn);
 
 

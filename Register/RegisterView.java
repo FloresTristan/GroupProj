@@ -93,6 +93,7 @@ class RegisterView{
 		JButton submitBttn = new JButton("submit");
 		submitBttn.setBounds(60,560,75,40);
 		loginPanel.add(submitBttn);
+
 		
 			
 

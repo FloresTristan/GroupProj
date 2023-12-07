@@ -7,7 +7,7 @@ import java.awt.*;
 class RegisterView{
 	private JFrame frame;
 	private RegisterController regCon;
-
+//gwapo butcon
 	public RegisterView(JFrame frame, RegisterController regCon){
 		this.frame = frame;
 		this.regCon = regCon;

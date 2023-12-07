@@ -16,89 +16,105 @@ class RegisterView{
 
 	public void initRegView(){
 		JPanel logPanel = new JPanel();
-		logPanel.setBounds(0,0,400,50);
-		logPanel.setBackground(new Color(40, 145, 242));
-		logPanel.setLayout(null);
-		frame.add(logPanel);
+        logPanel.setBounds(0, 0, 400, 50);
+        logPanel.setBackground(new Color(40, 145, 242));
+        logPanel.setLayout(null);
+        frame.add(logPanel);
 
-		
-		JPanel loginPanel = new JPanel();
-		loginPanel.setBounds(0,0,400,700);
-		loginPanel.setBackground(new Color(109, 198, 248));
-		loginPanel.setLayout(null);
-		frame.add(loginPanel);
+        JPanel loginPanel = new JPanel();
+        loginPanel.setBounds(0, 50, 400, 700);
+        loginPanel.setBackground(new Color(109, 198, 248));
+        loginPanel.setLayout(null);
+        frame.add(loginPanel);
 
+        JLabel loginLabel = new JLabel("CITE Vehicle Registration Form");
+        loginLabel.setBounds(45, -20, 300, 100);
+        loginLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        logPanel.add(loginLabel);
 
-		JLabel loginLabel = new JLabel("CITE Vehicle Registration Form");
-		loginLabel.setBounds(45,-20,300,100);
-		loginLabel.setFont(new Font("Arial", Font.BOLD,20));
-		logPanel.add(loginLabel);
+        // Add dropdown for Make, Type, Year Model
+        JLabel dropdownLabel = new JLabel("Make, Type, Year Model:");
+        dropdownLabel.setBounds(20, 495, 180, 25);
+        loginPanel.add(dropdownLabel);
 
-		JLabel userLabel = new JLabel("Name:");
-		userLabel.setBounds(20,80,100,100);
-		loginPanel.add(userLabel);
+        String[] makeTypeYearModelChoices = {"Make1 Type1 Year1", "Make2 Type2 Year2", "Make3 Type3 Year3"};
+        JComboBox<String> makeTypeYearModelComboBox = new JComboBox<>(makeTypeYearModelChoices);
+        makeTypeYearModelComboBox.setBounds(200, 495, 180, 25);
+        loginPanel.add(makeTypeYearModelComboBox);
 
-		JTextField userField = new JTextField("");
-		userField.setBounds(20,140,300,25);
-		loginPanel.add(userField);
+        JLabel userLabel = new JLabel("Name:");
+        userLabel.setBounds(20, 80, 100, 100);
+        loginPanel.add(userLabel);
 
-		JLabel vehicleLabel = new JLabel("Vehicle Type:");
-		vehicleLabel.setBounds(20,135,100,100);
-		loginPanel.add(vehicleLabel);
+        JTextField userField = new JTextField("");
+        userField.setBounds(20, 140, 300, 25);
+        loginPanel.add(userField);
 
-		JTextField vehicleField = new JTextField("");
-		vehicleField.setBounds(20,195,300,25);
-		loginPanel.add(vehicleField);
+        JLabel vehicleLabel = new JLabel("Vehicle Type:");
+        vehicleLabel.setBounds(20, 135, 100, 100);
+        loginPanel.add(vehicleLabel);
 
-		JLabel makeLabel = new JLabel("Make:");
-		makeLabel.setBounds(20,195,100,100);
-		loginPanel.add(makeLabel);
+        JTextField vehicleField = new JTextField("");
+        vehicleField.setBounds(20, 195, 300, 25);
+        loginPanel.add(vehicleField);
 
-		JTextField makeField = new JTextField("");
-		makeField.setBounds(20,255,300,25);
-		loginPanel.add(makeField);
+        JLabel makeLabel = new JLabel("Make:");
+        makeLabel.setBounds(20, 195, 100, 100);
+        loginPanel.add(makeLabel);
 
-		JLabel orLabel = new JLabel("OR Number:");
-		orLabel.setBounds(20,255,100,100);
-		loginPanel.add(orLabel);
+        JTextField makeField = new JTextField("");
+        makeField.setBounds(20, 255, 300, 25);
+        loginPanel.add(makeField);
 
-		JTextField orField = new JTextField("");
-		orField.setBounds(20,315,300,25);
-		loginPanel.add(orField);
+        JLabel orLabel = new JLabel("OR Number:");
+        orLabel.setBounds(20, 255, 100, 100);
+        loginPanel.add(orLabel);
 
-		JLabel crLabel = new JLabel("CR Number:");
-		crLabel.setBounds(20,315,100,100);
-		loginPanel.add(crLabel);
+        JTextField orField = new JTextField("");
+        orField.setBounds(20, 315, 300, 25);
+        loginPanel.add(orField);
 
-		JTextField crField = new JTextField("");
-		crField.setBounds(20,375,300,25);
-		loginPanel.add(crField);
+        JLabel crLabel = new JLabel("CR Number:");
+        crLabel.setBounds(20, 315, 100, 100);
+        loginPanel.add(crLabel);
 
-		JLabel plateLabel = new JLabel("Plate No:");
-		plateLabel.setBounds(20,375,100,100);
-		loginPanel.add(plateLabel);
+        JTextField crField = new JTextField("");
+        crField.setBounds(20, 375, 300, 25);
+        loginPanel.add(crField);
 
-		JTextField plateField = new JTextField("");
-		plateField.setBounds(20,435,300,25);
-		loginPanel.add(plateField);
+        JLabel plateLabel = new JLabel("Plate No:");
+        plateLabel.setBounds(20, 375, 100, 100);
+        loginPanel.add(plateLabel);
 
-		JLabel licenseLabel = new JLabel("License No:");
-		licenseLabel.setBounds(20,435,100,100);
-		loginPanel.add(licenseLabel);
+        JTextField plateField = new JTextField("");
+        plateField.setBounds(20, 435, 300, 25);
+        loginPanel.add(plateField);
 
-		JTextField licenseField = new JTextField("");
-		licenseField.setBounds(20,495,300,25);
-		loginPanel.add(licenseField);
+        JLabel licenseLabel = new JLabel("License No:");
+        licenseLabel.setBounds(20, 435, 100, 100);
+        loginPanel.add(licenseLabel);
 
-		JButton submitBttn = new JButton("submit");
-		submitBttn.setBounds(60,560,75,40);
-		loginPanel.add(submitBttn);
-		
-			
+        JTextField licenseField = new JTextField("");
+        licenseField.setBounds(20, 495, 300, 25);
+        loginPanel.add(licenseField);
 
-		JButton cnclBttn = new JButton("cancel");
-		cnclBttn.setBounds(215,560,75,40);
-		loginPanel.add(cnclBttn);
+        JButton submitBttn = new JButton("submit");
+        submitBttn.setBounds(60, 560, 100, 40);
+        submitBttn.setBackground(new Color(248, 217, 109));
+        submitBttn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int result = JOptionPane.showConfirmDialog(frame, "Do you want to submit?");
+                if (result == JOptionPane.YES_OPTION) {
+                    JOptionPane.showMessageDialog(frame, "You are now Registered!");
+                }
+            }
+        });
+        loginPanel.add(submitBttn);
+
+        JButton cnclBttn = new JButton("cancel");
+        cnclBttn.setBounds(215, 560, 100, 40);
+        cnclBttn.setBackground(new Color(248, 217, 109));
+        loginPanel.add(cnclBttn);
 
 	}
 }

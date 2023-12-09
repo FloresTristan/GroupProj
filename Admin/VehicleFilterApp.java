@@ -10,27 +10,25 @@ import java.util.List;
 
 class Vehicle {
     String name;
-    String type;
     String make;
+    String type;
     int year;
     String color;
     String plateNo;
     String license;
     int roleId;
 
-    public Vehicle(String name, String type, String make, int year, String color,
+    public Vehicle(String name, String make, String type, int year, String color,
                    String plateNo, String license, int roleId) {
         this.name = name;
-        this.type = type;
         this.make = make;
+        this.type = type;
         this.year = year;
         this.color = color;
         this.plateNo = plateNo;
         this.license = license;
         this.roleId = roleId;
     }
-
-    // Getters and setters if needed
 }
 
 class VehicleFilterModel {
@@ -76,9 +74,15 @@ class VehicleFilterModel {
             boolean yearMatches = year.isEmpty() || String.valueOf(vehicle.year).contains(year);
             boolean colorMatches = color.isEmpty() || vehicle.color.toLowerCase().contains(color.toLowerCase());
 
-            if (makeMatches || typeMatches || yearMatches || colorMatches) {
+            // If all provided keywords match, consider it a match
+            if (makeMatches && typeMatches && yearMatches && colorMatches) {
                 filteredList.add(vehicle);
             }
+        }
+
+        // If no matches found, display "No match found"
+        if (filteredList.isEmpty()) {
+            System.out.println("No match found");
         }
 
         return filteredList;
@@ -153,12 +157,20 @@ class VehicleFilterGUI {
             resultArea.append("No matching vehicles found.");
         } else {
             for (Vehicle vehicle : resultList) {
-                resultArea.append(vehicle.make + " | " + vehicle.type + " | " + vehicle.year + " | " + vehicle.color + " | " + vehicle.plateNo + " | " + vehicle.license + "\n");
+                resultArea.append(
+                        vehicle.name + " | " +
+                                vehicle.make + " | " +
+                                vehicle.type + " | " +
+                                vehicle.year + " | " +
+                                vehicle.color + " | " +
+                                vehicle.plateNo + " | " +
+                                vehicle.license + " | " +
+                                vehicle.roleId + "\n"
+                );
             }
         }
     }
 }
-
 
 public class VehicleFilterApp {
     public static void main(String[] args) {

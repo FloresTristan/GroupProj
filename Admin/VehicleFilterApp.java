@@ -2,7 +2,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,17 +47,17 @@ class VehicleFilterModel {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split("\\|");
-                if (parts.length == 10) { // Ensure the correct number of fields
+                if (parts.length == 10) {
                     String name = parts[0].trim();
-                    String type = parts[1].trim();
-                    String make = parts[2].trim();
+                    String make = parts[1].trim();
+                    String type = parts[2].trim();
                     int year = Integer.parseInt(parts[3].trim());
                     String color = parts[4].trim();
-                    String plateNo = parts[6].trim(); // Assuming Plate_No is the 7th field
+                    String plateNo = parts[6].trim();
                     String license = parts[7].trim();
-                    int roleId = Integer.parseInt(parts[9].trim()); // Assuming Role_ID is the 10th field
+                    int roleId = Integer.parseInt(parts[9].trim());
 
-                    Vehicle vehicle = new Vehicle(name, type, make, year, color, plateNo, license, roleId);
+                    Vehicle vehicle = new Vehicle(name, make, type, year, color, plateNo, license, roleId);
                     vehicleList.add(vehicle);
                 }
             }
@@ -69,12 +71,12 @@ class VehicleFilterModel {
         List<Vehicle> filteredList = new ArrayList<>();
 
         for (Vehicle vehicle : vehicleList) {
-            boolean makeMatches = make.isEmpty() || vehicle.make.equalsIgnoreCase(make);
-            boolean typeMatches = type.isEmpty() || vehicle.type.equalsIgnoreCase(type);
-            boolean yearMatches = year.isEmpty() || String.valueOf(vehicle.year).equalsIgnoreCase(year);
-            boolean colorMatches = color.isEmpty() || vehicle.color.equalsIgnoreCase(color);
+            boolean makeMatches = make.isEmpty() || vehicle.make.toLowerCase().contains(make.toLowerCase());
+            boolean typeMatches = type.isEmpty() || vehicle.type.toLowerCase().contains(type.toLowerCase());
+            boolean yearMatches = year.isEmpty() || String.valueOf(vehicle.year).contains(year);
+            boolean colorMatches = color.isEmpty() || vehicle.color.toLowerCase().contains(color.toLowerCase());
 
-            if (makeMatches && typeMatches && yearMatches && colorMatches) {
+            if (makeMatches || typeMatches || yearMatches || colorMatches) {
                 filteredList.add(vehicle);
             }
         }
@@ -83,7 +85,8 @@ class VehicleFilterModel {
     }
 }
 
-class VehicleFilterGUI extends JFrame {
+class VehicleFilterGUI {
+    private JFrame frame;
     private JTextField makeField;
     private JTextField typeField;
     private JTextField yearField;
@@ -94,6 +97,13 @@ class VehicleFilterGUI extends JFrame {
 
     public VehicleFilterGUI(VehicleFilterModel model) {
         this.model = model;
+        initialize();
+    }
+
+    private void initialize() {
+        frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLayout(new BorderLayout());
 
         makeField = new JTextField(10);
         typeField = new JTextField(10);
@@ -127,15 +137,13 @@ class VehicleFilterGUI extends JFrame {
         panel.add(new JLabel(""));
         panel.add(filterButton);
 
-        setLayout(new BorderLayout());
-        add(panel, BorderLayout.NORTH);
-        add(new JScrollPane(resultArea), BorderLayout.CENTER);
+        frame.add(panel, BorderLayout.NORTH);
+        frame.add(new JScrollPane(resultArea), BorderLayout.CENTER);
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        pack();
-        setLocationRelativeTo(null);
-        setTitle("Vehicle Filter");
-        setVisible(true);
+        frame.setSize(400, 300);
+        frame.setLocationRelativeTo(null);
+        frame.setTitle("Vehicle Filter");
+        frame.setVisible(true);
     }
 
     private void displayResults(List<Vehicle> resultList) {
@@ -149,15 +157,16 @@ class VehicleFilterGUI extends JFrame {
             }
         }
     }
+}
 
-    public class VehicleFilterApp {
-        public static void main(String[] args) {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    new VehicleFilterGUI(new VehicleFilterModel());
-                }
-            });
-        }
+
+public class VehicleFilterApp {
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new VehicleFilterGUI(new VehicleFilterModel());
+            }
+        });
     }
 }

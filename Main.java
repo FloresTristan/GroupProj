@@ -1,5 +1,5 @@
 import javax.swing.*;
-import github.group.login.*;
+import github.group.admin.*;
 
 public class Main {
     public static void main(String[] args) {

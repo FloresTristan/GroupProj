@@ -1,2 +1,0 @@
-# GroupProj
-para oop

@@ -1,5 +1,4 @@
 package github.group.login;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -17,7 +16,6 @@ class VehicleLoginView{
         this.control = control;
         initPanel();
     }
-
 
 
 
@@ -59,6 +57,28 @@ public void initPanel() {
         loginButton.setBounds(30, 350, 100, 30);
         loginButton.setBackground(new Color(248,217,109));
         regPanel.add(loginButton);
+        loginButton.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent e){
+                        String name = nameField.getText();
+                        char[] password = passwordField.getPassword();
+                        System.out.println("Attempting login for user: " + name);
+
+                        if(name.isEmpty()||password.length==0){
+                    JOptionPane.showMessageDialog(frame,"Please fill all the blanks","Error",JOptionPane.ERROR_MESSAGE);
+                    return;
+                        }
+
+                        if(control.getLogin(name, password)){
+                            //JOptionPane.showMessageDialog(frame,"Login successful","Success", JOptionPane.INFORMATION_MESSAGE);
+                             
+                        }else{
+                            JOptionPane.showMessageDialog(frame,"User does not exist.","Error",JOptionPane.ERROR_MESSAGE);
+                        }
+
+
+                }
+        });
+
 
         regBtn = new JButton("Register");
         regBtn.setBounds(240, 350, 100, 30);
@@ -71,5 +91,12 @@ public void initPanel() {
                 control.showRegView(frame);
             }
         });
+
+        
+        }
+        public void welcome(){
+                frame.getContentPane().removeAll();
+                frame.getContentPane().repaint();
+                control.showAdminInit(frame);
     }
 }

@@ -202,6 +202,7 @@ public class AdminGUI {
         searchPanel.add(searchButton);
         searchPanel.add(scrollPane);
         addEditButton();
+        addBackButton(searchPanel);
 
         contentPane.revalidate();
         contentPane.repaint();
@@ -301,7 +302,7 @@ private void displayResults(List<String> results) {
 // Modify the addEditButton method
 private void addEditButton() {
     JButton editButton = new JButton("Edit");
-    editButton.setBounds(10, 521, 100, 30);
+    editButton.setBounds(140, 521, 100, 30);
     editButton.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -309,7 +310,7 @@ private void addEditButton() {
         }
     });
     JButton deleteButton = new JButton("Delete");
-    deleteButton.setBounds(120, 521, 100, 30);
+    deleteButton.setBounds(265, 521, 100, 30);
     deleteButton.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -681,6 +682,7 @@ private int findRowIndex(List<String> lines, String[] newData) {
                 passwordField.setEchoChar(showPassword ? 0 : '*');
             }
         });
+         addBackButton(addRolesPanel);
 
         // Add action listener to dynamically show/hide components based on the selected role
         rolesComboBox.addActionListener(new ActionListener() {
@@ -707,7 +709,7 @@ private int findRowIndex(List<String> lines, String[] newData) {
         });
 
         JButton createRoleButton = new JButton("Create Account");
-        createRoleButton.setBounds(230, fieldY + 310, 130, 30);
+        createRoleButton.setBounds(230, 521, 130, 30);
         createRoleButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -780,7 +782,7 @@ private int findRowIndex(List<String> lines, String[] newData) {
                 }
             }
         });
-
+       
         // Add components to the panel
         addRolesPanel.add(rolesLabel);
         addRolesPanel.add(rolesComboBox);
@@ -798,18 +800,43 @@ private int findRowIndex(List<String> lines, String[] newData) {
         contentPane.repaint();
     }
     private String generateVehicleSticker(String name, String licensePlate) {
-        // Extract the first letter of the name
-        char firstLetter = name.charAt(0);
-
-        if(licensePlate.isEmpty()){
+        // Check if the name is empty
+        if (name.isEmpty() || licensePlate.isEmpty()) {
             return "";
         }
     
+        // Extract the first letter of the name
+        char firstLetter = name.charAt(0);
+    
         // Extract the last two digits of the license plate
-        String lastTwoDigits = licensePlate.substring(licensePlate.length() - 2);
+        String lastTwoDigits = licensePlate.substring(Math.max(0, licensePlate.length() - 2));
     
         // Build the vehicle sticker
         return "VH-" + Character.toUpperCase(firstLetter) + lastTwoDigits;
+    }
+    
+    private void addBackButton(Container panel) {
+        JButton backButton = new JButton("Back");
+        backButton.setBounds(15, 521, 100, 30);
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showInitialPanel();
+            }
+        });
+    
+        // Add the back button to the specified panel
+        panel.add(backButton);
+    }
+    private void showInitialPanel() {
+        // Remove existing filter or addRoles components
+        removeFilterComponents();
+        if (addRolesPanel != null) {
+            contentPane.remove(addRolesPanel);
+        }
+
+        // Show the initial panel
+        adminInit();
     }
     
 

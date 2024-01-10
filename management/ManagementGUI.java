@@ -321,64 +321,50 @@ private void displayResults(List<String> results) {
 
 // Modify the addEditButton method
 private void addEditButton() {
-    JButton editButton = new JButton("Edit");
-    editButton.setBounds(140, 521, 100, 30);
-    editButton.addActionListener(new ActionListener() {
+    
+    JButton deleteButton = new JButton("Delete");
+    deleteButton.setBounds(265, 521, 100, 30);
+    deleteButton.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            handleEditButton();
+            handleDeleteButton();
         }
     });
+    searchPanel.add(deleteButton);
 
-    // Add the "Edit" button to the searchPanel
-    searchPanel.add(editButton);
     searchPanel.revalidate();
     searchPanel.repaint();
 }
 // Add this method to your AdminGUI class
-private void handleEditButton() {
+private void handleDeleteButton() {
     int selectedRow = resultArea.getSelectedRow();
-    if (selectedRow != -1) {
-        // Get the data from the selected row
-        Vector<Object> rowData = ((DefaultTableModel) resultArea.getModel()).getDataVector().get(selectedRow);
-        String[] selectedData = new String[rowData.size()];
-        for (int i = 0; i < rowData.size(); i++) {
-            selectedData[i] = String.valueOf(rowData.get(i));
-        }
+    DefaultTableModel model = (DefaultTableModel) resultArea.getModel();
 
-        // Create a panel for edit components
-        JPanel editPanel = new JPanel();
-        editPanel.setLayout(new GridLayout(0, 2));
-        editPanel.setPreferredSize(new Dimension(300, 350));
+    if (selectedRow != -1 && selectedRow < model.getRowCount()) {
+        int confirmResult = JOptionPane.showConfirmDialog(frame,
+                "Are you sure you want to delete this row?", "Confirm Deletion", JOptionPane.YES_NO_OPTION);
 
-        // Add labels and text fields for each column
-        String[] columnNames = {"Row No.","Username","Name", "Vehicle Type", "Make", "Year Model", "Color", "Official Receipt", "Cert Registration", "Plate No", "License No", "Vehicle Sticker", "Registration Date", "Expiry Date", "Password", "Role ID"};
-        JTextField[] textFields = new JTextField[columnNames.length];
-
-        for (int i = 0; i < columnNames.length; i++) {
-            editPanel.add(new JLabel(columnNames[i]));
-            textFields[i] = new JTextField(selectedData[i]);
-            editPanel.add(textFields[i]);
-        }
-
-        int result = JOptionPane.showConfirmDialog(frame, editPanel, "Edit Row", JOptionPane.OK_CANCEL_OPTION);
-        if (result == JOptionPane.OK_OPTION) {
-            // Update the data in the selected row
-            for (int i = 0; i < columnNames.length; i++) {
-                String newValue = textFields[i].getText();
-                ((DefaultTableModel) resultArea.getModel()).setValueAt(newValue, selectedRow, i);
-                selectedData[i] = newValue;
-            }
+        if (confirmResult == JOptionPane.YES_OPTION) {
+            // Get the data from the selected row in the table
+            String username = (String) model.getValueAt(selectedRow, 1); // Assuming username is in the second column
+            String password = (String) model.getValueAt(selectedRow, 14); // Assuming password is in the fifteenth column
 
             // Update the data in the user.dat file
-            updateDataInFile(selectedData);
+            deleteDataFromFile(username, password);
 
-            JOptionPane.showMessageDialog(frame, "Row edited successfully", "Edit", JOptionPane.INFORMATION_MESSAGE);
+            // Remove the selected row from the table
+            model.removeRow(selectedRow);
+
+            // Update the row numbers for the subsequent rows
+            updateRowNumbers(model, selectedRow);
+
+            JOptionPane.showMessageDialog(frame, "Row deleted successfully", "Delete", JOptionPane.INFORMATION_MESSAGE);
         }
     } else {
-        JOptionPane.showMessageDialog(frame, "Please select a row to edit", "Edit", JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(frame, "Please select a valid row to delete", "Delete", JOptionPane.WARNING_MESSAGE);
     }
 }
+
 
 private void updateRowNumbers(DefaultTableModel model, int deletedRowIndex) {
     // Iterate through rows after the deleted row and update row numbers
@@ -407,6 +393,58 @@ private void updateFileWithModifiedData(DefaultTableModel model) {
         for (String line : updatedData) {
             writer.write(line);
             writer.newLine();
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
+
+private void deleteDataFromFile(String[] deletedData) {
+    try {
+        String fileName = "C:\\Users\\Michael\\Documents\\App\\database\\user.dat";
+        List<String> lines = new ArrayList<>();
+
+        // Read all lines from the file
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                lines.add(line);
+            }
+        }
+
+        // Find and remove the line based on a unique identifier (you can adjust this based on your data structure)
+        String uniqueIdentifier = deletedData[0]; // Assuming the first column is a unique identifier (e.g., username)
+        int deletedRowIndex = -1;
+
+        for (int i = 0; i < lines.size(); i++) {
+            String[] userInfo = lines.get(i).split("\\|");
+
+            if (userInfo.length > 0 && userInfo[0].equals(uniqueIdentifier)) {
+                deletedRowIndex = i;
+                lines.remove(i);
+                break;
+            }
+        }
+
+        // Update the unique identifier for subsequent rows
+        if (deletedRowIndex != -1) {
+            for (int i = deletedRowIndex; i < lines.size(); i++) {
+                String[] userInfo = lines.get(i).split("\\|");
+
+                if (userInfo.length > 0) {
+                    int newIdentifier = i + 1;
+                    userInfo[0] = String.valueOf(newIdentifier);
+                    lines.set(i, String.join("|", userInfo));
+                }
+            }
+        }
+
+        // Write the updated lines back to the file
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            for (String line : lines) {
+                writer.write(line);
+                writer.newLine();
+            }
         }
     } catch (IOException e) {
         e.printStackTrace();
@@ -449,8 +487,6 @@ private void updateDataInFile(String[] newData) {
         e.printStackTrace();
     }
 }
-
-
 
 private int findRowIndex(List<String> lines, String[] newData) {
     for (int i = 0; i < lines.size(); i++) {

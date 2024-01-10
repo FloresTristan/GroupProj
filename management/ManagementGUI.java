@@ -16,6 +16,10 @@ import java.util.List;
 import java.util.Vector;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.awt.event.*;
+
 
 
 public class ManagementGUI {
@@ -27,6 +31,14 @@ public class ManagementGUI {
     private JTable resultArea;
     private List<Component> userRoleComponents;
     private JButton backButton;
+    private String vehicleType = "";
+    private String make = "";
+    private int yearModel = 0;
+    private String color = "";
+    private char[] oR = {};
+    private char[] cR = {};
+    private char[] plateNo = {};
+    private char[] licenseNo = {};
 
     public ManagementGUI(JFrame frame, ManagementController management) {
         this.frame = frame;
@@ -161,15 +173,15 @@ public class ManagementGUI {
         searchPanel.setBackground(new Color(109, 198, 248));
         contentPane.add(searchPanel);
 
-        JLabel label = new JLabel("Search Filter");
-        label.setFont(new Font("Arial", Font.PLAIN, 24));
-        label.setOpaque(true);
-        label.setBackground(Color.BLUE);
-        label.setForeground(Color.WHITE);
-        label.setHorizontalAlignment(JLabel.CENTER);
-        label.setVerticalAlignment(JLabel.CENTER);
-        label.setBounds(0, 15, 400, 100);
-        searchPanel.add(label);
+        JLabel searchLabel = new JLabel("Search Filter");
+        searchLabel.setFont(new Font("Arial", Font.PLAIN, 24));
+        searchLabel.setOpaque(true);
+        searchLabel.setBackground(Color.BLUE);
+        searchLabel.setForeground(Color.WHITE);
+        searchLabel.setHorizontalAlignment(JLabel.CENTER);
+        searchLabel.setVerticalAlignment(JLabel.CENTER);
+        searchLabel.setBounds(0, 15, 400, 100);
+        searchPanel.add(searchLabel);
 
         // Add search bar components
         JTextField searchBar = new JTextField();
@@ -186,10 +198,6 @@ public class ManagementGUI {
                 performSearchAndDisplay(searchText);
             }
         });
-
-        // Add the back button to the search panel
-        //searchPanel.add(backButton);
-        addBackButton(searchPanel);
 
         // Create the result area table
         resultArea = new JTable();
@@ -214,6 +222,7 @@ public class ManagementGUI {
         searchPanel.add(searchButton);
         searchPanel.add(scrollPane);
         addEditButton();
+        addBackButton(searchPanel);
 
         contentPane.revalidate();
         contentPane.repaint();
@@ -222,7 +231,8 @@ public class ManagementGUI {
 private List<String> performSearch(String searchText) {
     List<String> matchingResults = new ArrayList<>();
 
-    try (BufferedReader reader = new BufferedReader(new FileReader("C:\\\\Users\\\\Michael\\\\Documents\\\\App\\\\database\\\\user.dat"))) {
+   
+    try (BufferedReader reader = new BufferedReader(new FileReader("C:\\Users\\Michael\\Documents\\App\\database\\user.dat"))) {
         String line;
 
         while ((line = reader.readLine()) != null) {
@@ -247,8 +257,7 @@ private List<String> performSearch(String searchText) {
                 }
             }
 
-            // Check for role ID "2" or "3"
-            if (matchFound && ("2".equals(userInfo[15].trim()) || "3".equals(userInfo[15].trim()))) {
+            if (matchFound) {
                 matchingResults.add(line);
             }
         }
@@ -258,7 +267,6 @@ private List<String> performSearch(String searchText) {
 
     return matchingResults;
 }
-
 
 
 
@@ -282,10 +290,6 @@ private List<String> performSearch(String searchText) {
 }
 
 
-    
-
-
-
 // Modify the displayResults method to call addEditButton
 private void displayResults(List<String> results) {
     DefaultTableModel model = new DefaultTableModel();
@@ -299,7 +303,7 @@ private void displayResults(List<String> results) {
     resultArea.setModel(model);
 
     // Set different preferred width for the first column
-    int firstColumnWidth = 20; // Adjust this value based on your requirement
+    int firstColumnWidth = 30; // Adjust this value based on your requirement
     resultArea.getColumnModel().getColumn(0).setPreferredWidth(firstColumnWidth);
 
     // Set fixed column widths for the rest of the columns
@@ -318,21 +322,20 @@ private void displayResults(List<String> results) {
 // Modify the addEditButton method
 private void addEditButton() {
     JButton editButton = new JButton("Edit");
-    editButton.setBounds(265, 521, 100, 30);
+    editButton.setBounds(140, 521, 100, 30);
     editButton.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
             handleEditButton();
         }
     });
-    
 
     // Add the "Edit" button to the searchPanel
     searchPanel.add(editButton);
     searchPanel.revalidate();
     searchPanel.repaint();
 }
-// Add this method to your ManagementGUI class
+// Add this method to your AdminGUI class
 private void handleEditButton() {
     int selectedRow = resultArea.getSelectedRow();
     if (selectedRow != -1) {
@@ -377,6 +380,16 @@ private void handleEditButton() {
     }
 }
 
+private void updateRowNumbers(DefaultTableModel model, int deletedRowIndex) {
+    // Iterate through rows after the deleted row and update row numbers
+    for (int i = deletedRowIndex; i < model.getRowCount(); i++) {
+        model.setValueAt(i + 1, i, 0); // Assuming the first column is the row number
+    }
+
+    // Update the file with the modified data
+    updateFileWithModifiedData(model);
+}
+
 private void updateFileWithModifiedData(DefaultTableModel model) {
     // Get the updated data from the table model
     List<String> updatedData = new ArrayList<>();
@@ -390,7 +403,7 @@ private void updateFileWithModifiedData(DefaultTableModel model) {
     }
 
     // Write the updated data back to the file
-    try (BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\\\Users\\\\Michael\\\\Documents\\\\App\\\\database\\\\user.dat"))) {
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\Michael\\Documents\\App\\database\\user.dat"))) {
         for (String line : updatedData) {
             writer.write(line);
             writer.newLine();
@@ -400,45 +413,7 @@ private void updateFileWithModifiedData(DefaultTableModel model) {
     }
 }
 
-private void deleteDataFromFile(String[] deletedData) {
-    try {
-        String fileName = "C:\\\\Users\\\\Michael\\\\Documents\\\\App\\\\database\\\\user.dat";
-        List<String> lines = new ArrayList<>();
-
-        // Read all lines from the file
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                lines.add(line);
-            }
-        }
-
-        // Find and remove the line based on a unique identifier (you can adjust this based on your data structure)
-        String uniqueIdentifier = deletedData[0]; // Assuming the first column is a unique identifier (e.g., username)
-        for (int i = 0; i < lines.size(); i++) {
-            String[] userInfo = lines.get(i).split("\\|");
-
-            if (userInfo.length > 0 && userInfo[0].equals(uniqueIdentifier)) {
-                lines.remove(i);
-                break;
-            }
-        }
-
-        // Write the updated lines back to the file
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
-            for (String line : lines) {
-                writer.write(line);
-                writer.newLine();
-            }
-        }
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-}
-
-
-
-// Add this method to your ManagementGUI class
+// Add this method to your AdminGUI class
 private void updateDataInFile(String[] newData) {
     try {
         String fileName = "C:\\\\Users\\\\Michael\\\\Documents\\\\App\\\\database\\\\user.dat";
@@ -474,8 +449,6 @@ private void updateDataInFile(String[] newData) {
         e.printStackTrace();
     }
 }
-
-
 
 
 
@@ -556,6 +529,75 @@ private int findRowIndex(List<String> lines, String[] newData) {
         showPasswordCheckBox.setBounds(10, fieldY + 150, 150, 30);
         showPasswordCheckBox.setOpaque(false);
 
+        JLabel detailslabel = new JLabel("Add more details?");
+        detailslabel.setFont(detailslabel.getFont().deriveFont(Font.PLAIN));
+        detailslabel.setBounds(170, fieldY + 150, 150, 30);
+
+        detailslabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                detailslabel.setForeground(Color.BLUE);
+                detailslabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                detailslabel.setForeground(Color.BLACK);
+                detailslabel.setCursor(Cursor.getDefaultCursor());
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                detailslabel.setForeground(Color.RED);
+                JPanel detPanel = new JPanel();
+                detPanel.setLayout(new GridLayout(0, 2));
+                detPanel.setPreferredSize(new Dimension(300, 350));
+                JComboBox vehicleTypeComboBox = null;
+                JComboBox yearModelComboBox = null;
+
+                // Add labels and combo boxes for each column
+                String[] columnNames = {"Vehicle Type", "Make", "Year Model", "Color", "Official Receipt", "Cert Registration", "Plate No", "License No"};
+                Component[] components = new Component[columnNames.length];
+
+                for (int i = 0; i < columnNames.length; i++) {
+                    detPanel.add(new JLabel(columnNames[i]));
+
+                    if (columnNames[i].equals("Vehicle Type")) {
+                        String[] vehicleTypes = {"", "2 wheels", "4 wheels"};
+                        vehicleTypeComboBox = new JComboBox<>(vehicleTypes);
+                        detPanel.add(vehicleTypeComboBox);
+                        components[i] = vehicleTypeComboBox;
+                    } else if (columnNames[i].equals("Year Model")) {
+                        Integer[] yearModelOptions = new Integer[2023 - 1990 + 1];
+                        for (int j = 0; j < yearModelOptions.length; j++) {
+                            yearModelOptions[j] = 1990 + j;
+                        }
+                        yearModelComboBox = new JComboBox<>(yearModelOptions);
+                        detPanel.add(yearModelComboBox);
+                        components[i] = yearModelComboBox;
+                    } else {
+                        JTextField textField = new JTextField();
+                        detPanel.add(textField);
+                        components[i] = textField;
+                    }
+                }
+
+                int result = JOptionPane.showConfirmDialog(frame, detPanel, "Add details", JOptionPane.OK_CANCEL_OPTION);
+                if (result == JOptionPane.OK_OPTION) {
+                    vehicleType = (String) vehicleTypeComboBox.getSelectedItem();
+                    make = ((JTextField) components[1]).getText();
+                    yearModel = (Integer) yearModelComboBox.getSelectedItem();
+                    color = ((JTextField) components[3]).getText();
+                    oR = ((JTextField) components[4]).getText().toCharArray();
+                    cR = ((JTextField) components[5]).getText().toCharArray();
+                    plateNo = ((JTextField) components[6]).getText().toCharArray();
+                    licenseNo = ((JTextField) components[7]).getText().toCharArray();
+                    
+                }
+            }
+            
+        });
+
         // Add action listener to show/hide the password based on checkbox state
         showPasswordCheckBox.addActionListener(new ActionListener() {
             @Override
@@ -573,33 +615,18 @@ private int findRowIndex(List<String> lines, String[] newData) {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String selectedRole = (String) rolesComboBox.getSelectedItem();
-                boolean isManagementOrManagement = "Management".equals(selectedRole) || "Management".equals(selectedRole);
+                boolean isAdminOrManagement = "Admin".equals(selectedRole) || "Management".equals(selectedRole) || "User".equals(selectedRole);
+                usernameField.setText("");
+                nameField.setText("");
+                passwordField.setText("");
+                showPasswordCheckBox.setSelected(false);
 
-                // Reposition the components based on visibility
-                int yOffset = isManagementOrManagement ? 0 : 50;
-
-                rolesLabel.setBounds(10, 150 + yOffset, 100, 30);
-                rolesComboBox.setBounds(120, 150 + yOffset, 150, 30);
-                usernameLabel.setBounds(10, labelY + yOffset, 100, 30);
-                usernameField.setBounds(120, fieldY + yOffset, 200, 30);
-                nameLabel.setBounds(10, labelY + 50 + yOffset, 100, 30);
-                nameField.setBounds(120, fieldY + 50 + yOffset, 200, 30);
-                passwordLabel.setBounds(10, labelY + 100 + yOffset, 100, 30);
-                passwordField.setBounds(120, fieldY + 100 + yOffset, 200, 30);
-                showPasswordCheckBox.setBounds(10, fieldY + 150 + yOffset, 150, 30);
-
-                // Show/hide components specific to the "User" role
-                if ("User".equals(selectedRole)) {
-                    // Clear components specific to the "User" role
-                    addRolesPanel.removeAll();
-                } else {
-                    // Hide components specific to the "User" role
                     if (userRoleComponents != null) {
                         for (Component component : userRoleComponents) {
                             component.setVisible(false);
                         }
                     }
-                }
+                
 
                 // Update visibility for the entire addRolesPanel
                 addRolesPanel.revalidate();
@@ -613,24 +640,75 @@ private int findRowIndex(List<String> lines, String[] newData) {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Handle role creation logic here
+                Date regDate = new Date();
+		        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		        String formattedRegDate = dateFormat.format(regDate);
+
+		        Calendar expCalendar = Calendar.getInstance();
+		        expCalendar.setTime(regDate);
+		        expCalendar.add(Calendar.YEAR, 1);
+		        String formattedExpDate = dateFormat.format(expCalendar.getTime());
+
+                // Handle role creation logic here
                 String selectedRole = (String) rolesComboBox.getSelectedItem();
                 String username = usernameField.getText();
                 String name = nameField.getText();
                 String password = new String(passwordField.getPassword());
+                int roleID = 0;
+
+                if("Admin".equals(selectedRole)){
+                    roleID = 1;
+                } else if("Management".equals(selectedRole)){
+                    roleID = 2;
+                } else if("User".equals(selectedRole)){
+                    roleID = 3;
+                }
+                String plateNoString;
+
+                if (plateNo == null || plateNo.length == 0) {
+                    plateNoString = ""; // Set to empty string if plateNo is empty
+                } else {
+                    plateNoString = new String(plateNo);
+                }
+
+                String vehicleSticker = generateVehicleSticker(name, plateNoString);
 
                 // Perform validation: Check if any field is empty
                 if (selectedRole.isEmpty() || username.isEmpty() || name.isEmpty() || password.isEmpty()) {
                     JOptionPane.showMessageDialog(frame, "Please fill in all the blanks", "Error", JOptionPane.ERROR_MESSAGE);
-                } else {
+                    return;
+                } 
+                boolean create = management.addRole(username, name, vehicleType, make, yearModel, color, oR, cR, plateNo, licenseNo, vehicleSticker, formattedRegDate, formattedExpDate, password, roleID);
+                if(create){
+                    
                     // Perform necessary actions with the entered values (e.g., create the role)
                     JOptionPane.showMessageDialog(frame, "Role created: " + selectedRole +
                             "\nUsername: " + username +
                             "\nName: " + name +
                             "\nPassword: " + password);
+                    usernameField.setText("");
+                    nameField.setText("");
+                    passwordField.setText("");
+                    showPasswordCheckBox.setSelected(false);
+
+                    vehicleType = "";
+                    make = "";
+                    yearModel = 0;
+                    color = "";
+                    oR = new char[0];
+                    cR = new char[0];
+                    plateNo = new char[0];
+                    licenseNo = new char[0];
+                    
+
+
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Registration failed. Username already exists.", "Error",JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
             }
         });
-
+       
         // Add components to the panel
         addRolesPanel.add(rolesLabel);
         addRolesPanel.add(rolesComboBox);
@@ -642,9 +720,25 @@ private int findRowIndex(List<String> lines, String[] newData) {
         addRolesPanel.add(passwordField);
         addRolesPanel.add(showPasswordCheckBox);
         addRolesPanel.add(createRoleButton);
+        addRolesPanel.add(detailslabel);
 
         contentPane.revalidate();
         contentPane.repaint();
+    }
+    private String generateVehicleSticker(String name, String licensePlate) {
+        // Check if the name is empty
+        if (name.isEmpty() || licensePlate.isEmpty()) {
+            return "";
+        }
+    
+        // Extract the first letter of the name
+        char firstLetter = name.charAt(0);
+    
+        // Extract the last two digits of the license plate
+        String lastTwoDigits = licensePlate.substring(Math.max(0, licensePlate.length() - 2));
+    
+        // Build the vehicle sticker
+        return "VH-" + Character.toUpperCase(firstLetter) + lastTwoDigits;
     }
     public void returnToLogin(){
         int confirmation = JOptionPane.showConfirmDialog(frame, "Proceed to Log Out?", "Log Out Confirmation", JOptionPane.YES_NO_OPTION);

@@ -7,10 +7,9 @@ import javax.swing.JFrame;
 
 public class UserController {
     private UserModel model;
-    private VehicleLoginController login;
     private DetailsController detailsController;
-    private AdminController adminCon;
-    private JFrame frame;
+    private VehicleLoginController login;
+    
 
     public UserController() {
         this.model = new UserModel(this);
@@ -38,10 +37,7 @@ public class UserController {
         public int authenticateAndGetRoleId(String username, char[] password) {
         return model.authenticateAndGetRoleId(username, password);
     }
-    public void getUserDetails(String make, String type, String color, String regDate, String expDate) {
-        detailsController = new DetailsController();
-        detailsController.showDetailsView(make,type,color,regDate,expDate);
-    }
+    
     public boolean addingRole(String userName, String name, String vehicleType, String make, int yearModel, String color, char[] oR, char[] cR, char[] plateNo, char[] licenseNo, String vehicleSticker, String formattedRegDate, String formattedExpDate, String password, int roleID){
         if(userName.isEmpty()||name.isEmpty()||password.isEmpty()||roleID == 0){
             return false;

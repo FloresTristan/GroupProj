@@ -2,17 +2,20 @@ package github.group.user;
 
 import java.util.*;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 
 class UserModel {
     private UserController user;
+	private static final String databaseDirectory = "database/";
 
     public UserModel(UserController user) {
         this.user = user;
     }
 
     public static boolean register(String userName, String name, String vehicleType, String make, int yearModel, String color, char[] oR, char[] cR, char[] plateNo, char[] licenseNo, String vehicleSticker, String formattedRegDate, String formattedExpDate, char[] password) {
-        String filePath = "C:\\Users\\Michael\\Documents\\App\\database\\user.dat";
+        String filePath = databaseDirectory + "user.dat";
         String strMake = new String(make);
         int yrModel = yearModel;
         String vColor = color;
@@ -42,7 +45,7 @@ class UserModel {
         }
     }
     public static boolean createRoles(String userName, String name, String vehicleType, String make, int yearModel, String color, char[] oR, char[] cR, char[] plateNo, char[] licenseNo, String vehicleSticker, String formattedRegDate, String formattedExpDate, String pass, int roleID){
-        String filePath = "C:\\Users\\Michael\\Documents\\App\\database\\user.dat";
+        String filePath = databaseDirectory + "user.dat";
         String strOr = new String(oR);
         String strCr = new String(cR);
         String strPlateNo = new String(plateNo);
@@ -78,57 +81,61 @@ class UserModel {
     }
     
 
-    private static boolean userExists(String userName) {
-        // Check if the user already exists in user.dat
-        File file = new File("C:\\\\Users\\\\Michael\\\\Documents\\\\App\\\\database\\\\user.dat");
+   private static boolean userExists(String userName) {
+    // Check if the user already exists in user.dat
+    String filePath = databaseDirectory + "user.dat";
 
-        // If the file doesn't exist, there are no existing users
-        if (!file.exists()) {
-            return false;
-        }
-
-        // Read user.dat line by line and check for an existing user
-        try (java.util.Scanner scanner = new java.util.Scanner(file)) {
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                String[] userData = line.split(" \\| ");
-
-                // Check if the name and username match
-                if (userData.length >= 14 && userData[1].equals(userName)) {
-                    return true; // User already exists
-                }
-            }
-        } catch (FileNotFoundException e) {
-            // Handle the exception (e.g., print an error message)
-            System.err.println("Error reading from file: " + e.getMessage());
-        }
-        return false; // User does not exist
-    }
-    private static boolean isVehicleExists(String strOR, String strCR, String strPlateNo, String strLicenseNo) {
-        File file = new File("C:\\Users\\Michael\\Documents\\App\\database\\user.dat");
-    
-        if (!file.exists()) {
-            return false;
-        }
-    
-        try (java.util.Scanner scanner = new java.util.Scanner(file)) {
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                String[] userData = line.split(" \\| ");
-    
-                // Check if the vehicle information already exists
-                if (userData.length >= 15 && userData[7].equals(strOR) && userData[8].equals(strCR) && userData[9].equals(strPlateNo) && userData[10].equals(strLicenseNo)) {
-                    return true;
-                }
-            }
-        } catch (FileNotFoundException e) {
-            System.err.println("Error reading from file: " + e.getMessage());
-        }
+    // If the file doesn't exist, there are no existing users
+    File file = new File(filePath);
+    if (!file.exists()) {
         return false;
     }
 
+    // Read user.dat line by line and check for an existing user
+    try (java.util.Scanner scanner = new java.util.Scanner(file)) {
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            String[] userData = line.split(" \\| ");
+
+            // Check if the name and username match
+            if (userData.length >= 14 && userData[1].equals(userName)) {
+                return true; // User already exists
+            }
+        }
+    } catch (FileNotFoundException e) {
+        // Handle the exception (e.g., print an error message)
+        System.err.println("Error reading from file: " + e.getMessage());
+    }
+    return false; // User does not exist
+}
+
+
+    private static boolean isVehicleExists(String strOR, String strCR, String strPlateNo, String strLicenseNo) {
+    String filePath = databaseDirectory + "user.dat";
+    File file = new File(filePath);
+
+    if (!file.exists()) {
+        return false;
+    }
+
+    try (java.util.Scanner scanner = new java.util.Scanner(file)) {
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            String[] userData = line.split(" \\| ");
+
+            // Check if the vehicle information already exists
+            if (userData.length >= 15 && userData[7].equals(strOR) && userData[8].equals(strCR) && userData[9].equals(strPlateNo) && userData[10].equals(strLicenseNo)) {
+                return true;
+            }
+        }
+    } catch (FileNotFoundException e) {
+        System.err.println("Error reading from file: " + e.getMessage());
+    }
+    return false;
+}
+
     public int authenticateAndGetRoleId(String username, char[] password) {
-        String filePath = "C:\\\\Users\\\\Michael\\\\Documents\\\\App\\\\database\\\\user.dat";
+        String filePath = databaseDirectory + "user.dat";
         System.out.println("Entering authenticateAndGetRoleId");
 
 
@@ -158,7 +165,7 @@ class UserModel {
     // The login method remains unchanged
     // Modify the login method to dynamically determine the role ID position
    public  boolean login(String username, char[] password) {
-    String filePath = "C:\\\\Users\\\\Michael\\\\Documents\\\\App\\\\database\\\\user.dat";
+   String filePath = databaseDirectory + "user.dat";
 
     try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
         String line;
@@ -188,7 +195,7 @@ class UserModel {
 
                             // If the role ID is 3, return the original userData
                             System.out.println("Before calling showUserDetails");
-                             showUserDetails(userData);
+                            showUserDetails(username, filePath);
                         } else {
                             System.out.println("Invalid role ID!");
                         }
@@ -205,28 +212,50 @@ class UserModel {
         System.err.println("Error reading from file: " + e.getMessage());
     }
 
-    System.out.println("Invalid username or password. Please try again.");
-    return false;
-}
-
-    // Helper method to find the position of a field in userData
+        System.out.println("Invalid username or password. Please try again.");
+        return false;
+    }
     private static int findRoleIdPosition(String[] userData) {
         int position = userData.length - 1;
-    System.out.println("Role ID Position: " + position);
-    return position;
+        System.out.println("Role ID Position: " + position);
+        return position;
     }
-    private void showUserDetails(String[] userData) {
-        // Extract specific details for users with role ID 3
-        String make = userData[4].trim();
-        String vehicleType = userData[3].trim();
-        String color = userData[5].trim();
-        String regDate = userData[12].trim();
-        String expDate = userData[13].trim();
 
-        System.out.println("Details from UserModel: " + make + ", " + vehicleType + ", " + color + ", " + regDate + ", " + expDate);
-        user.getUserDetails(make,vehicleType,color,regDate,expDate);
+// Method to show user details when the role ID is 3
+private void showUserDetails(String username, String filePath) {
+    try {
+        List<String> lines = Files.readAllLines(Paths.get(filePath));
 
-        
+        // Use Java Streams to filter lines based on the username
+        lines.stream()
+                .filter(line -> {
+                    String[] userData = line.split("\\|");
+                    return userData.length >= 2 && userData[1].trim().equals(username);
+                })
+                .forEach(userLine -> {
+                    String[] userData = userLine.split("\\|");
+
+                    // Extract specific details for users with role ID 3
+                    if (userData.length >= 16) {
+                        String make = userData[4].trim();  // Assuming make is at index 5
+                        String vehicleType = userData[3].trim();  // Assuming vehicleType is at index 4
+                        String color = userData[6].trim();
+                        String regDate = userData[12].trim();
+                        String expDate = userData[13].trim();
+
+                        System.out.println("Details from UserModel: " + make + ", " + vehicleType + ", " + color + ", " + regDate + ", " + expDate);
+                        
+                    } else {
+                        System.out.println("Invalid data structure in the file.");
+                    }
+                });
+
+    } catch (IOException e) {
+        System.err.println("Error reading from file: " + e.getMessage());
     }
+}
+
+
+
 
 }

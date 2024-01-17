@@ -9,6 +9,7 @@ public class AdminController{
 	private JFrame frame;
 	private UserController userCon;
 	private RegisterController regCon;
+	private VehicleLoginController login;
 
 	public AdminController(JFrame frame){
 		this.frame = frame;
@@ -20,6 +21,7 @@ public class AdminController{
 		return userCon.addingRole(userName, name,vehicleType, make, yearModel, color, oR, cR, plateNo, licenseNo, vehicleSticker, formattedRegDate, formattedExpDate, pass, roleID);
 	}
 	public void showLogin(){
-		new VehicleLoginController(frame);
+		login = new VehicleLoginController();
+		login.loginController(frame);
 	}
 } 

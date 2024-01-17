@@ -2,27 +2,22 @@ package github.group.admin;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.util.Arrays;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.*;
-import java.util.Vector;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 
-public class AdminGUI {
+class AdminGUI {
+    private static final String databaseDirectory = "database/";
     private JFrame frame;
     private JPanel searchPanel;
     private AdminController admin;
@@ -54,22 +49,54 @@ public class AdminGUI {
         initialPanel.setBackground(new Color(109, 198, 248));
     
         JLabel adminLabel = new JLabel("Hello, Admin!");
-        adminLabel.setFont(new Font("Arial", Font.PLAIN, 24));
+        adminLabel.setFont(new Font("Arial", Font.PLAIN, 40));
         adminLabel.setOpaque(true);
         adminLabel.setBackground(Color.BLUE);
         adminLabel.setForeground(Color.WHITE);
         adminLabel.setHorizontalAlignment(JLabel.CENTER);
         adminLabel.setVerticalAlignment(JLabel.CENTER);
-        adminLabel.setBounds(0, 150, 400, 100);
+        adminLabel.setBounds(0, 0, 400, 100);
         initialPanel.add(adminLabel);
+
+        ImageIcon originalIcon = new ImageIcon("database/citelogo.png");
+
+        // Resize the image
+        Image originalImage = originalIcon.getImage();
+        Image resizedImage = originalImage.getScaledInstance(300, 300, Image.SCALE_SMOOTH); // Set the desired width and height
+
+        // Create a new ImageIcon with the resized image
+        ImageIcon resizedIcon = new ImageIcon(resizedImage);
+        // Create a JLabel to display the image
+        JLabel imageLabel = new JLabel(resizedIcon);
+        imageLabel.setBounds(45, 100, 300, 300); // Set the bounds as per your requirement
+        initialPanel.add(imageLabel);
     
         // Add label for Search, Edit, and Add Roles
-        JLabel actionLabel = new JLabel("Search, Edit, and Add Roles");
-        actionLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        JLabel actionLabel = new JLabel("About");
+        actionLabel.setFont(new Font("Arial", Font.BOLD, 25));
         actionLabel.setForeground(Color.BLACK);
         actionLabel.setHorizontalAlignment(JLabel.CENTER);
-        actionLabel.setBounds(0, 300, 400, 30);
+        actionLabel.setBounds(0, 400, 400, 100);
         initialPanel.add(actionLabel);
+
+        JLabel infoLabel = new JLabel("<html><div style='text-align: center;'>" +
+        "   Welcome to the CITE Vehicle Registration App, where convenience meets<br>" +
+        "    compliance. Our mission is to simplify the vehicle registration process,<br>" +
+        "      enhance school road safety, and streamline traffic enforcement<br>" +
+        "through innovative technology.</div></html>");
+        infoLabel.setFont(new Font("Arial", Font.PLAIN, 10));
+        infoLabel.setForeground(Color.BLACK);
+
+        infoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        //infoTextArea.getCaret().setVisible(false);
+
+        // Calculate the bounds for the JTextArea based on the actionLabel
+        int textAreaY = actionLabel.getY() + actionLabel.getHeight();
+        int textAreaHeight = 100; // Adjust the height as needed
+
+        infoLabel.setBounds(20, 450, 380, textAreaHeight);
+        initialPanel.add(infoLabel);
     
         // Set initial panel
         contentPane.add(initialPanel);
@@ -208,334 +235,484 @@ public class AdminGUI {
         contentPane.repaint();
     }
 
-private List<String> performSearch(String searchText) {
-    List<String> matchingResults = new ArrayList<>();
+    private List<String> performSearch(String searchText) {
+        String filePath = databaseDirectory + "user.dat";
+        List<String> matchingResults = new ArrayList<>();
 
-   
-    try (BufferedReader reader = new BufferedReader(new FileReader("C:\\Users\\Michael\\Documents\\App\\database\\user.dat"))) {
-        String line;
+    
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
 
-        while ((line = reader.readLine()) != null) {
-            String[] userInfo = line.split("\\|");
+            while ((line = reader.readLine()) != null) {
+                String[] userInfo = line.split("\\|");
 
-            boolean matchFound = true;
+                boolean matchFound = true;
 
-            for (String term : searchText.toLowerCase().split("\\s+")) {
-                boolean termMatched = false;
+                for (String term : searchText.toLowerCase().split("\\s+")) {
+                    boolean termMatched = false;
 
-                for (String info : userInfo) {
-                    // Use \\b to match the whole word
-                    if (info.trim().toLowerCase().matches(".*\\b" + term + "\\b.*")) {
-                        termMatched = true;
+                    for (String info : userInfo) {
+                        // Use \\b to match the whole word
+                        if (info.trim().toLowerCase().matches(".*\\b" + term + "\\b.*")) {
+                            termMatched = true;
+                            break;
+                        }
+                    }
+
+                    if (!termMatched) {
+                        matchFound = false;
                         break;
                     }
                 }
 
-                if (!termMatched) {
-                    matchFound = false;
-                    break;
+                if (matchFound) {
+                    matchingResults.add(line);
                 }
             }
-
-            if (matchFound) {
-                matchingResults.add(line);
-            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
 
-    return matchingResults;
-}
+        return matchingResults;
+    }
 
 
 
 
     private void performSearchAndDisplay(String searchText) {
     // Check if the search bar is blank
-    if (searchText.trim().isEmpty()) {
-        JOptionPane.showMessageDialog(frame, "Please enter a search term", "Empty Search", JOptionPane.WARNING_MESSAGE);
-    } else {
-        // Logic for performing search (similar to VehicleSearch class)
-        List<String> matchingResults = performSearch(searchText);
-
-        if (matchingResults.isEmpty()) {
-            // Display message for no matches found
-            JOptionPane.showMessageDialog(frame, "No matches found for the search: " + searchText, "No Matches", JOptionPane.INFORMATION_MESSAGE);
+        if (searchText.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(frame, "Please enter a search term", "Empty Search", JOptionPane.WARNING_MESSAGE);
         } else {
-            // Display search results
-            displayResults(matchingResults);
+            // Logic for performing search (similar to VehicleSearch class)
+            List<String> matchingResults = performSearch(searchText);
+
+            if (matchingResults.isEmpty()) {
+                // Display message for no matches found
+                JOptionPane.showMessageDialog(frame, "No matches found for the search: " + searchText, "No Matches", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                // Display search results
+                displayResults(matchingResults);
+            }
         }
     }
-}
 
 
 // Modify the displayResults method to call addEditButton
-private void displayResults(List<String> results) {
-    DefaultTableModel model = new DefaultTableModel();
-    model.setColumnIdentifiers(new Object[]{"No.", "Username", "Name", "Vehicle Type", "Make", "Year Model", "Color", "Official Receipt", "Cert Registration", "Plate No", "License No", "Vehicle Sticker", "Registration Date", "Expiry Date", "Password", "Role ID"});
+    private void displayResults(List<String> results) {
+        DefaultTableModel model = new DefaultTableModel();
+        model.setColumnIdentifiers(new Object[]{"No.", "Username", "Name", "Vehicle Type", "Make", "Year Model", "Color", "Official Receipt", "Cert Registration", "Plate No", "License No", "Vehicle Sticker", "Registration Date", "Expiry Date", "Password", "Role ID"});
 
-    for (String result : results) {
-        String[] resultData = result.split("\\|");
-        model.addRow(resultData);
+        for (String result : results) {
+            String[] resultData = result.split("\\|");
+            model.addRow(resultData);
+        }
+
+        resultArea.setModel(model);
+
+        // Set different preferred width for the first column
+        int firstColumnWidth = 30; // Adjust this value based on your requirement
+        resultArea.getColumnModel().getColumn(0).setPreferredWidth(firstColumnWidth);
+
+        // Set fixed column widths for the rest of the columns
+        int fixedColumnWidth = 100; // Adjust this value based on your requirement
+        for (int i = 1; i < model.getColumnCount(); i++) {
+            resultArea.getColumnModel().getColumn(i).setPreferredWidth(fixedColumnWidth);
+        }
+
+        // Set auto-resize mode to OFF for the horizontal scrollbar to work correctly
+        resultArea.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+        // Call the method to add the "Edit" button
     }
 
-    resultArea.setModel(model);
 
-    // Set different preferred width for the first column
-    int firstColumnWidth = 30; // Adjust this value based on your requirement
-    resultArea.getColumnModel().getColumn(0).setPreferredWidth(firstColumnWidth);
-
-    // Set fixed column widths for the rest of the columns
-    int fixedColumnWidth = 100; // Adjust this value based on your requirement
-    for (int i = 1; i < model.getColumnCount(); i++) {
-        resultArea.getColumnModel().getColumn(i).setPreferredWidth(fixedColumnWidth);
-    }
-
-    // Set auto-resize mode to OFF for the horizontal scrollbar to work correctly
-    resultArea.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-
-    // Call the method to add the "Edit" button
-}
-
-
-// Modify the addEditButton method
-private void addEditButton() {
-    JButton editButton = new JButton("Edit");
-    editButton.setBounds(140, 521, 100, 30);
-    editButton.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            handleEditButton();
-        }
-    });
-    JButton deleteButton = new JButton("Delete");
-    deleteButton.setBounds(265, 521, 100, 30);
-    deleteButton.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            handleDeleteButton();
-        }
-    });
-
-    // Add the "Delete" button to the searchPanel
-    searchPanel.add(deleteButton);
-
-    // Add the "Edit" button to the searchPanel
-    searchPanel.add(editButton);
-    searchPanel.revalidate();
-    searchPanel.repaint();
-}
-// Add this method to your AdminGUI class
-private void handleEditButton() {
-    int selectedRow = resultArea.getSelectedRow();
-    if (selectedRow != -1) {
-        // Get the data from the selected row
-        Vector<Object> rowData = ((DefaultTableModel) resultArea.getModel()).getDataVector().get(selectedRow);
-        String[] selectedData = new String[rowData.size()];
-        for (int i = 0; i < rowData.size(); i++) {
-            selectedData[i] = String.valueOf(rowData.get(i));
-        }
-
-        // Create a panel for edit components
-        JPanel editPanel = new JPanel();
-        editPanel.setLayout(new GridLayout(0, 2));
-        editPanel.setPreferredSize(new Dimension(300, 350));
-
-        // Add labels and text fields for each column
-        String[] columnNames = {"Row No.","Username","Name", "Vehicle Type", "Make", "Year Model", "Color", "Official Receipt", "Cert Registration", "Plate No", "License No", "Vehicle Sticker", "Registration Date", "Expiry Date", "Password", "Role ID"};
-        JTextField[] textFields = new JTextField[columnNames.length];
-
-        for (int i = 0; i < columnNames.length; i++) {
-            editPanel.add(new JLabel(columnNames[i]));
-            textFields[i] = new JTextField(selectedData[i]);
-            editPanel.add(textFields[i]);
-        }
-
-        int result = JOptionPane.showConfirmDialog(frame, editPanel, "Edit Row", JOptionPane.OK_CANCEL_OPTION);
-        if (result == JOptionPane.OK_OPTION) {
-            // Update the data in the selected row
-            for (int i = 0; i < columnNames.length; i++) {
-                String newValue = textFields[i].getText();
-                ((DefaultTableModel) resultArea.getModel()).setValueAt(newValue, selectedRow, i);
-                selectedData[i] = newValue;
+    // Modify the addEditButton method
+    private void addEditButton() {
+        JButton editButton = new JButton("Edit");
+        editButton.setBounds(140, 521, 100, 30);
+        editButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                handleEditButton();
             }
-
-            // Update the data in the user.dat file
-            updateDataInFile(selectedData);
-
-            JOptionPane.showMessageDialog(frame, "Row edited successfully", "Edit", JOptionPane.INFORMATION_MESSAGE);
-        }
-    } else {
-        JOptionPane.showMessageDialog(frame, "Please select a row to edit", "Edit", JOptionPane.WARNING_MESSAGE);
-    }
-}
-private void handleDeleteButton() {
-    int selectedRow = resultArea.getSelectedRow();
-    DefaultTableModel model = (DefaultTableModel) resultArea.getModel();
-
-    if (selectedRow != -1 && selectedRow < model.getRowCount()) {
-        int confirmResult = JOptionPane.showConfirmDialog(frame,
-                "Are you sure you want to delete this row?", "Confirm Deletion", JOptionPane.YES_NO_OPTION);
-
-        if (confirmResult == JOptionPane.YES_OPTION) {
-            // Get the data from the selected row in the table
-            Vector<Object> rowData = model.getDataVector().get(selectedRow);
-            String[] deletedData = new String[rowData.size()];
-
-            for (int i = 0; i < rowData.size(); i++) {
-                deletedData[i] = String.valueOf(rowData.get(i));
+        });
+        JButton deleteButton = new JButton("Delete");
+        deleteButton.setBounds(265, 521, 100, 30);
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                handleDeleteButton();
             }
-
-            // Update the data in the user.dat file
-            deleteDataFromFile(deletedData);
-
-            // Remove the selected row from the table
-            model.removeRow(selectedRow);
-
-            // Update the row numbers for the subsequent rows
-            updateRowNumbers(model, selectedRow);
-
-            JOptionPane.showMessageDialog(frame, "Row deleted successfully", "Delete", JOptionPane.INFORMATION_MESSAGE);
-        }
-    } else {
-        JOptionPane.showMessageDialog(frame, "Please select a valid row to delete", "Delete", JOptionPane.WARNING_MESSAGE);
-    }
-}
-
-private void updateRowNumbers(DefaultTableModel model, int deletedRowIndex) {
-    // Iterate through rows after the deleted row and update row numbers
-    for (int i = deletedRowIndex; i < model.getRowCount(); i++) {
-        model.setValueAt(i + 1, i, 0); // Assuming the first column is the row number
-    }
-
-    // Update the file with the modified data
-    updateFileWithModifiedData(model);
-}
-
-private void updateFileWithModifiedData(DefaultTableModel model) {
-    // Get the updated data from the table model
-    List<String> updatedData = new ArrayList<>();
-    for (int i = 0; i < model.getRowCount(); i++) {
-        Vector<Object> rowData = model.getDataVector().get(i);
-        String[] rowArray = new String[rowData.size()];
-        for (int j = 0; j < rowData.size(); j++) {
-            rowArray[j] = String.valueOf(rowData.get(j));
-        }
-        updatedData.add(String.join("|", rowArray));
-    }
-
-    // Write the updated data back to the file
-    try (BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\Michael\\Documents\\App\\database\\user.dat"))) {
-        for (String line : updatedData) {
-            writer.write(line);
-            writer.newLine();
-        }
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-}
-
-private void deleteDataFromFile(String[] deletedData) {
-    try {
-        String fileName = "C:\\Users\\Michael\\Documents\\App\\database\\user.dat";
-        List<String> lines = new ArrayList<>();
-
-        // Read all lines from the file
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                lines.add(line);
+        });
+        JButton remarkButton = new JButton("Remark");
+        remarkButton.setBounds(140, 571, 100, 30);
+        remarkButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                handleRemarkButton();
             }
-        }
+        });
 
-        // Find and remove the line based on a unique identifier (you can adjust this based on your data structure)
-        String uniqueIdentifier = deletedData[0]; // Assuming the first column is a unique identifier (e.g., username)
-        int deletedRowIndex = -1;
-
-        for (int i = 0; i < lines.size(); i++) {
-            String[] userInfo = lines.get(i).split("\\|");
-
-            if (userInfo.length > 0 && userInfo[0].equals(uniqueIdentifier)) {
-                deletedRowIndex = i;
-                lines.remove(i);
-                break;
-            }
-        }
-
-        // Update the unique identifier for subsequent rows
-        if (deletedRowIndex != -1) {
-            for (int i = deletedRowIndex; i < lines.size(); i++) {
-                String[] userInfo = lines.get(i).split("\\|");
-
-                if (userInfo.length > 0) {
-                    int newIdentifier = i + 1;
-                    userInfo[0] = String.valueOf(newIdentifier);
-                    lines.set(i, String.join("|", userInfo));
+        searchPanel.add(remarkButton); 
+        searchPanel.add(deleteButton);
+        searchPanel.add(editButton);
+        searchPanel.revalidate();
+        searchPanel.repaint();
+    }
+    private void handleRemarkButton() {
+        int selectedRow = resultArea.getSelectedRow();
+    
+        if (selectedRow != -1) {
+            String selectedUsername = (String) resultArea.getValueAt(selectedRow, 1);
+    
+            // Retrieve the current remark for the selected username
+            String currentRemark = getRemarkForUsername(selectedUsername);
+    
+            // Create a panel for remark components
+            JPanel remarkPanel = new JPanel(null); // Use null layout for precise positioning
+            remarkPanel.setPreferredSize(new Dimension(300, 150));
+    
+            // Add labels and text area for remark
+            JTextArea remarkTextArea = new JTextArea(currentRemark);
+            JScrollPane scrollPane = new JScrollPane(remarkTextArea);
+            scrollPane.setBounds(5, 25, 290, 110);
+    
+            JLabel remarkLabel = new JLabel("Remark:");
+            remarkLabel.setBounds(5, 5, 100, 20);
+            remarkPanel.add(remarkLabel);
+            remarkPanel.add(scrollPane);
+    
+            while (true) {
+                int option = JOptionPane.showOptionDialog(
+                        frame,
+                        remarkPanel,
+                        "Manage Remark",
+                        JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        new Object[]{"Submit", "Delete", "Cancel"},
+                        null
+                );
+    
+                switch (option) {
+                    case 0: // Submit
+                        String editedRemark = remarkTextArea.getText().trim();
+                        if (!editedRemark.isEmpty()) {
+                            saveRemarkToFile(selectedUsername, editedRemark);
+                            JOptionPane.showMessageDialog(frame, "Remark submitted successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                            return; // Exit the method
+                        } else {
+                            JOptionPane.showMessageDialog(frame, "Please type a remark to submit.", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                        break;
+                    case 1: // Delete
+                        String currentRemarkToDelete = getRemarkForUsername(selectedUsername);
+                        if (!currentRemarkToDelete.trim().isEmpty()) {
+                            deleteRemark(selectedUsername);
+                            JOptionPane.showMessageDialog(frame, "Remark deleted successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                            return; // Exit the method
+                        } else {
+                            JOptionPane.showMessageDialog(frame, "No remarks to be removed.", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                        break;
+                    case 2: // Cancel
+                        return; // Exit the method
                 }
             }
+        } else {
+            JOptionPane.showMessageDialog(frame, "Please select a row to manage remarks.", "Remark", JOptionPane.WARNING_MESSAGE);
         }
-
-        // Write the updated lines back to the file
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
-            for (String line : lines) {
-                writer.write(line);
-                writer.newLine();
-            }
-        }
-    } catch (IOException e) {
-        e.printStackTrace();
     }
-}
-
-// Add this method to your AdminGUI class
-private void updateDataInFile(String[] newData) {
-    try {
-        String fileName = "C:\\\\Users\\\\Michael\\\\Documents\\\\App\\\\database\\\\user.dat";
-        List<String> lines = new ArrayList<>();
-
-        // Read all lines from the file
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+    
+    
+    private String getRemarkForUsername(String username) {
+        // Implement logic to retrieve and return the remark for the given username from the file
+        String filePath = databaseDirectory + "remark.dat";
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("\\|");
+                if (parts.length == 2 && parts[0].equals(username)) {
+                    return parts[1];
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+    private void saveRemarkToFile(String username, String remark) {
+        // Implement logic to save or update the remark for the given username in the file
+        String filePath = databaseDirectory + "remark.dat";
+        List<String> lines = new ArrayList<>();
+    
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("\\|");
+                if (parts.length == 2 && parts[0].equals(username)) {
+                    // Update the existing line with the new remark
+                    line = username + "|" + remark;
+                }
                 lines.add(line);
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-        // Find and update the line based on a unique identifier (you can adjust this based on your data structure)
-        String uniqueIdentifier = newData[0]; // Assuming the first column is a unique identifier (e.g., username)
-        for (int i = 0; i < lines.size(); i++) {
-            String[] userInfo = lines.get(i).split("\\|");
-
-            if (userInfo.length > 0 && userInfo[0].equals(uniqueIdentifier)) {
-                lines.set(i, String.join("|", newData));
-                break;
-            }
+    
+        // Check if the username already has a remark, if not, add a new line
+        boolean usernameExists = lines.stream().anyMatch(line -> {
+            String[] parts = line.split("\\|");
+            return parts.length == 2 && parts[0].equals(username);
+        });
+    
+        if (!usernameExists) {
+            lines.add(username + "|" + remark);
         }
-
-        // Write the updated lines back to the file
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+    
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             for (String line : lines) {
                 writer.write(line);
                 writer.newLine();
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-}
-
-
-
-private int findRowIndex(List<String> lines, String[] newData) {
-    for (int i = 0; i < lines.size(); i++) {
-        String[] userInfo = lines.get(i).split("\\|");
-        if (Arrays.equals(userInfo, newData)) {
-            return i;
+    }    
+    
+    private void deleteRemark(String username) {
+        // Implement logic to delete the remark for the given username from the file
+        String filePath = databaseDirectory + "remark.dat";
+        List<String> lines = new ArrayList<>();
+    
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("\\|");
+                if (parts.length == 2 && parts[0].equals(username)) {
+                    // Skip the line to delete it
+                    continue;
+                }
+                lines.add(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            for (String line : lines) {
+                writer.write(line);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
-    return -1;  // Not found
-}
+    // Add this method to your AdminGUI class
+    private void handleEditButton() {
+        int selectedRow = resultArea.getSelectedRow();
+        if (selectedRow != -1) {
+            // Get the data from the selected row
+            Vector<Object> rowData = ((DefaultTableModel) resultArea.getModel()).getDataVector().get(selectedRow);
+            String[] selectedData = new String[rowData.size()];
+            for (int i = 0; i < rowData.size(); i++) {
+                selectedData[i] = String.valueOf(rowData.get(i));
+            }
+
+            // Create a panel for edit components
+            JPanel editPanel = new JPanel();
+            editPanel.setLayout(new GridLayout(0, 2));
+            editPanel.setPreferredSize(new Dimension(300, 350));
+
+            // Add labels and text fields for each column
+            String[] columnNames = {"Row No.","Username","Name", "Vehicle Type", "Make", "Year Model", "Color", "Official Receipt", "Cert Registration", "Plate No", "License No", "Vehicle Sticker", "Registration Date", "Expiry Date", "Password", "Role ID"};
+            JTextField[] textFields = new JTextField[columnNames.length];
+
+            for (int i = 0; i < columnNames.length; i++) {
+                editPanel.add(new JLabel(columnNames[i]));
+                textFields[i] = new JTextField(selectedData[i]);
+                editPanel.add(textFields[i]);
+            }
+
+            int result = JOptionPane.showConfirmDialog(frame, editPanel, "Edit Row", JOptionPane.OK_CANCEL_OPTION);
+            if (result == JOptionPane.OK_OPTION) {
+                // Update the data in the selected row
+                for (int i = 0; i < columnNames.length; i++) {
+                    String newValue = textFields[i].getText();
+                    ((DefaultTableModel) resultArea.getModel()).setValueAt(newValue, selectedRow, i);
+                    selectedData[i] = newValue;
+                }
+
+                // Update the data in the user.dat file
+                updateDataInFile(selectedData);
+
+                JOptionPane.showMessageDialog(frame, "Row edited successfully", "Edit", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(frame, "Please select a row to edit", "Edit", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+    
+
+    private void updateFileWithModifiedData(DefaultTableModel model) {
+        String filePath = databaseDirectory + "user.dat";
+        // Get the updated data from the table model
+        List<String> updatedData = new ArrayList<>();
+        for (int i = 0; i < model.getRowCount(); i++) {
+            Vector<Object> rowData = model.getDataVector().get(i);
+            String[] rowArray = new String[rowData.size()];
+            for (int j = 0; j < rowData.size(); j++) {
+                rowArray[j] = String.valueOf(rowData.get(j));
+            }
+            updatedData.add(String.join("|", rowArray));
+        }
+
+        // Write the updated data back to the file
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            for (String line : updatedData) {
+                writer.write(line);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void handleDeleteButton() {
+        int selectedRow = resultArea.getSelectedRow();
+        DefaultTableModel model = (DefaultTableModel) resultArea.getModel();
+
+        if (selectedRow != -1 && selectedRow < model.getRowCount()) {
+            int confirmResult = JOptionPane.showConfirmDialog(frame,
+                    "Are you sure you want to delete this row?", "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+
+            if (confirmResult == JOptionPane.YES_OPTION) {
+                // Get the identifier (first column) from the selected row
+                Object identifier = model.getValueAt(selectedRow, 0);
+
+                // Update the data in the user.dat file
+                deleteDataFromFile(identifier);
+
+                // Remove the selected row from the table
+                model.removeRow(selectedRow);
+
+                // Update the row numbers for the subsequent rows
+                updateRowNumbers(model, selectedRow);
+
+                JOptionPane.showMessageDialog(frame, "Row deleted successfully", "Delete", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(frame, "Please select a valid row to delete", "Delete", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    private void deleteDataFromFile(Object identifier) {
+        try {
+            String filePath = databaseDirectory + "user.dat";
+            List<String> lines = new ArrayList<>();
+
+            // Read all lines from the file
+            try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    lines.add(line);
+                }
+            }
+
+            // Find and remove the line based on a unique identifier
+            int deletedRowIndex = -1;
+
+            for (int i = 0; i < lines.size(); i++) {
+                String[] userInfo = lines.get(i).split("\\|");
+
+                if (userInfo.length > 0 && userInfo[0].equals(String.valueOf(identifier))) {
+                    deletedRowIndex = i;
+                    lines.remove(i);
+                    break;
+                }
+            }
+
+            // Update the unique identifier for subsequent rows
+            if (deletedRowIndex != -1) {
+                for (int i = deletedRowIndex; i < lines.size(); i++) {
+                    String[] userInfo = lines.get(i).split("\\|");
+
+                    if (userInfo.length > 0) {
+                        int newIdentifier = i + 1;
+                        userInfo[0] = String.valueOf(newIdentifier);
+                        lines.set(i, String.join("|", userInfo));
+                    }
+                }
+            }
+
+            // Write the updated lines back to the file
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+                for (String line : lines) {
+                    writer.write(line);
+                    writer.newLine();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateRowNumbers(DefaultTableModel model, int startIndex) {
+        // Update the row numbers for subsequent rows in the table
+        for (int i = startIndex; i < model.getRowCount(); i++) {
+            model.setValueAt(i + 1, i, 0);
+        }
+    }
+
+    // Add this method to your AdminGUI class
+    private void updateDataInFile(String[] newData) {
+        try {
+            String filePath = databaseDirectory + "user.dat";
+            List<String> lines = new ArrayList<>();
+
+            // Read all lines from the file
+            try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    lines.add(line);
+                }
+            }
+
+            // Find and update the line based on a unique identifier (you can adjust this based on your data structure)
+            String uniqueIdentifier = newData[0]; // Assuming the first column is a unique identifier (e.g., username)
+            for (int i = 0; i < lines.size(); i++) {
+                String[] userInfo = lines.get(i).split("\\|");
+
+                if (userInfo.length > 0 && userInfo[0].equals(uniqueIdentifier)) {
+                    lines.set(i, String.join("|", newData));
+                    break;
+                }
+            }
+
+            // Write the updated lines back to the file
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+                for (String line : lines) {
+                    writer.write(line);
+                    writer.newLine();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+    private int findRowIndex(List<String> lines, String[] newData) {
+        for (int i = 0; i < lines.size(); i++) {
+            String[] userInfo = lines.get(i).split("\\|");
+            if (Arrays.equals(userInfo, newData)) {
+                return i;
+            }
+        }
+        return -1;  // Not found
+    }
 
 
     // Method to remove filter components
@@ -834,10 +1011,7 @@ private int findRowIndex(List<String> lines, String[] newData) {
         if (addRolesPanel != null) {
             contentPane.remove(addRolesPanel);
         }
-
         // Show the initial panel
         adminInit();
     }
-    
-
 }

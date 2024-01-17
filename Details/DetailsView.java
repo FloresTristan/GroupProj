@@ -10,25 +10,21 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-public class DetailsView {
+class DetailsView extends AbstractDetailsView{
 
-    private JFrame frame;
-    private RoundedPanel detailspanel;
-    private RoundedArea areapanel;
-    private RoundedButton backbutton, quitbutton;
-    private JLabel detaillabel, makelabel, typelabel, stickerlabel, colorlabel;
-    private JTextArea makearea, linearea, typearea, stickerarea, colorarea, expiryarea, registrationarea;
-    private DetailsController detcon;
-    
+    protected RoundedPanel detailspanel;
+    protected RoundedArea areapanel;
+    protected RoundedButton backbutton;
+
     public void setDetailsController(DetailsController detcon) {
         this.detcon = detcon;
     }
 
-    public void detailsView(JFrame frame, String make, String type, String color, String regDate, String expDate, String sticker) {
+    public void detailsView(JFrame frame, String username, String make, String type, String color, String regDate, String expDate, String sticker) {
         this.frame = frame;
         System.out.println("Details from detView: " + make + ", " + type + ", " + color + ", " + regDate + ", " + expDate+ ", "+sticker);
         
-       initView(make,type,color,regDate,expDate,sticker);
+       initView(username,make,type,color,regDate,expDate,sticker);
        checkExpiration(expDate);
     }
 
@@ -47,7 +43,7 @@ public class DetailsView {
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
             // Set the background color for the RoundedPanel
-            g2d.setColor(new Color(0, 102, 102));
+            g2d.setColor(new Color(109, 198, 248));
             g2d.fill(new RoundRectangle2D.Double(0, 0, getWidth() - 1, getHeight() - 1, cornerRadius, cornerRadius));
 
             g2d.dispose();
@@ -116,7 +112,7 @@ public class DetailsView {
         }
     }
 
-    public void initView(String make, String type, String color, String regDate, String expDate, String sticker) {
+    public void initView(String username, String make, String type, String color, String regDate, String expDate, String sticker) {
         try {
            System.out.println("Details in InitView: " + make + ", " + type + ", " + color + ", " + regDate + ", " + expDate );
             detailspanel = new RoundedPanel(15);
@@ -125,7 +121,7 @@ public class DetailsView {
             frame.add(detailspanel);
 
             areapanel = new RoundedArea(20);
-            areapanel.setBounds(45, 45, 300, 500);
+            areapanel.setBounds(45, 70, 300, 500);
             areapanel.setLayout(null);
             detailspanel.add(areapanel);
 
@@ -211,44 +207,126 @@ public class DetailsView {
             areapanel.add(expirydatelabel);
 
             expiryarea = new JTextArea(expDate);
-            expiryarea.setBounds(27, 315, 315,27);
+            expiryarea.setBounds(27, 315, 310,27);
             expiryarea.setFont(new Font("Abyssinica SIL", Font.BOLD, 20));
             expiryarea.setForeground(Color.WHITE);
             expiryarea.setBackground(new Color(0, 153, 153));
             expiryarea.setEditable(false);
             areapanel.add(expiryarea);
 
-            backbutton = new RoundedButton(40, "Back");
-            backbutton.setBounds(110, 570, 70, 40);
+           /*backbutton = new RoundedButton(40, "Add new Vehicle");
+            backbutton.setBounds(120, 590, 150, 40);
+            backbutton.setFont(new Font("Abyssinica SIL", Font.BOLD, 14));
             backbutton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     frame.getContentPane().removeAll();
                     frame.repaint();
+                    detcon.regAnotherVehicle();
+                }
+            });
+            detailspanel.add(backbutton);*/
+
+            JPanel labelPanel = new JPanel();
+            labelPanel.setBounds(0, 0, 386, 50);
+            labelPanel.setLayout(null);
+            labelPanel.setBackground(new Color(40, 145, 242));
+            detailspanel.add(labelPanel);
+
+            ImageIcon originalIcon = new ImageIcon("database/citelogo.png");
+
+            // Resize the image
+            Image originalImage = originalIcon.getImage();
+            Image resizedImage = originalImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH); // Set the desired width and height
+
+            // Create a new ImageIcon with the resized image
+            ImageIcon resizedIcon = new ImageIcon(resizedImage);
+            // Create a JLabel to display the image
+            JLabel imageLabel = new JLabel(resizedIcon);
+            imageLabel.setBounds(10, 0, 50, 50); // Set the bounds as per your requirement
+            labelPanel.add(imageLabel);
+
+            userLabel = new JLabel(username);
+            userLabel.setBounds(75, 15, 200, 20);
+            userLabel.setFont(new Font("Abyssinica SIL", Font.BOLD, 18));
+            userLabel.setForeground(Color.BLACK);
+            labelPanel.add(userLabel);
+
+            backLabel = new JLabel("log out");
+            backLabel.setBounds(300, 15, 60, 20);
+            backLabel.setFont(new Font("Abyssinica SIL", Font.PLAIN, 12));
+            backLabel.setForeground(Color.BLACK); // Blue foreground color
+            backLabel.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+                        backLabel.setForeground(Color.WHITE);
+                        backLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                    }
+        
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                        backLabel.setForeground(Color.BLACK);
+                        backLabel.setCursor(Cursor.getDefaultCursor());
+                    }
+        
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        backLabel.setForeground(Color.RED);
+
+                        int choice = JOptionPane.showConfirmDialog(frame, "Proceed to Log out?", "Logout Confirmation", JOptionPane.YES_NO_OPTION);
+                        if (choice == JOptionPane.YES_OPTION) {
+                            frame.getContentPane().removeAll();
+                            frame.repaint();
+                            detcon.showLoginView();
+                        } else {
+                            backLabel.setForeground(Color.BLACK);
+                        }
+                    }
+                });
+                
+            labelPanel.add(backLabel);
+
+            JLabel pipeLabel = new JLabel(" | ");
+            pipeLabel.setBounds(335, 18, 20, 14);
+            pipeLabel.setFont(new Font("Abyssinica SIL", Font.PLAIN, 18));
+            labelPanel.add(pipeLabel);
+
+            quitLabel = new JLabel("Quit");
+            quitLabel.setBounds(350, 19, 60, 12);
+            quitLabel.setFont(new Font("Abyssinica SIL", Font.PLAIN, 12));
+            quitLabel.setForeground(Color.BLACK); // Blue foreground color
+            quitLabel.addMouseListener(new MouseAdapter() {
+                public void mouseEntered(MouseEvent e) {
+                    quitLabel.setForeground(Color.WHITE);
+                    quitLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                }
+    
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    quitLabel.setForeground(Color.BLACK);
+                    quitLabel.setCursor(Cursor.getDefaultCursor());
+                }
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    quitLabel.setForeground(Color.RED);
+                    int choice = JOptionPane.showConfirmDialog(frame, "Close Application?", "Close Application", JOptionPane.YES_NO_OPTION);
+                    if (choice == JOptionPane.YES_OPTION) {
+                        frame.dispose();
+                    } else {
+                        backLabel.setForeground(Color.BLACK);
+                    }
                     
-                    detcon.showLoginView();
                 }
             });
-            backbutton.setFont(new Font("Abyssinica SIL", Font.BOLD, 14));
-            detailspanel.add(backbutton);
+            labelPanel.add(quitLabel);
 
-            quitbutton = new RoundedButton(40, "Quit");
-            quitbutton.setBounds(210, 570, 70, 40);
-            quitbutton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    frame.dispose();
-                }
-            });
-            quitbutton.setBackground(new Color(248, 217, 109));
-            quitbutton.setFont(new Font("Abyssinica SIL", Font.BOLD, 14));
-            detailspanel.add(quitbutton);
-
+            
             frame.setVisible(true);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        
     }
+
     private void checkExpiration(String expDate) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         try {

@@ -13,9 +13,13 @@ class VehicleLoginView {
     private JButton loginButton, regBtn;
     private JCheckBox showPasswordCheckbox;
 
-    public VehicleLoginView(JFrame frame, VehicleLoginController control) {
-        this.frame = frame;
+    public void setLoginController(VehicleLoginController control) {
         this.control = control;
+    }
+
+    
+    public void loginView(JFrame frame) {
+        this.frame = frame;
         initPanel();
     }
 
@@ -30,25 +34,38 @@ class VehicleLoginView {
         JLabel reg = new JLabel("LOGIN");
         reg.setHorizontalAlignment(JLabel.CENTER);
         reg.setVerticalAlignment(JLabel.CENTER);
-        reg.setFont(new Font("Arial", Font.BOLD, 20));
+        reg.setFont(new Font("Arial", Font.BOLD, 30));
         reg.setBounds(0, 10, 400, 50);
         reg.setOpaque(true);
         reg.setBackground(new Color(40, 145, 242));
         regPanel.add(reg);
 
         nameField = new JTextField();
-        addTitledField(regPanel, "Username", nameField, 20, 150);
+        addTitledField(regPanel, "Username", nameField, 20, 200);
 
         passwordField = new JPasswordField();
-        addTitledField(regPanel, "Password", passwordField, 20, 240);
+        addTitledField(regPanel, "Password", passwordField, 20, 270);
+
+        ImageIcon originalIcon = new ImageIcon("database/citelogo.png");
+
+        // Resize the image
+        Image originalImage = originalIcon.getImage();
+        Image resizedImage = originalImage.getScaledInstance(100, 100, Image.SCALE_SMOOTH); // Set the desired width and height
+
+        // Create a new ImageIcon with the resized image
+        ImageIcon resizedIcon = new ImageIcon(resizedImage);
+        // Create a JLabel to display the image
+        JLabel imageLabel = new JLabel(resizedIcon);
+        imageLabel.setBounds(45,85,300,100);  // Set the bounds as per your requirement
+        regPanel.add(imageLabel);
 
         showPasswordCheckbox = new JCheckBox("Show Password");
-        showPasswordCheckbox.setBounds(20, 300, 120, 20);
+        showPasswordCheckbox.setBounds(20, 320, 120, 50);
         showPasswordCheckbox.setBackground(new Color(109, 198, 248));
         regPanel.add(showPasswordCheckbox);
 
         loginButton = new JButton("Login");
-        loginButton.setBounds(140, 350, 100, 30);
+        loginButton.setBounds(140, 390, 100, 30);
         loginButton.setBackground(new Color(248, 217, 109));
         regPanel.add(loginButton);
         loginButton.addActionListener(new ActionListener() {
@@ -82,20 +99,9 @@ class VehicleLoginView {
             }
         });
 
-        /*regBtn = new JButton("Register");
-        regBtn.setBounds(240, 350, 100, 30);
-        regBtn.setBackground(new Color(248, 217, 109));
-        regPanel.add(regBtn);
-        regBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                frame.getContentPane().removeAll();
-                frame.repaint();
-                control.showRegView(frame);
-            }
-        });*/
         JLabel regbtnLabel = new JLabel("No Account? Register.");
         regbtnLabel.setFont(regbtnLabel.getFont().deriveFont(Font.PLAIN));
-        regbtnLabel.setBounds(135, 400, 150, 30);
+        regbtnLabel.setBounds(135, 440, 150, 30);
         regPanel.add(regbtnLabel);
         regbtnLabel.addMouseListener(new MouseAdapter() {
             @Override

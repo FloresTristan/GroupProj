@@ -1,11 +1,16 @@
 package github.group.register;
+
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+
 class RegisterView{
 	private JFrame frame;
 	private RegisterController regCon;
-	private JTextField userField;  
+	private JTextField userField, userNameField;  
     private JComboBox<String> vehicleTypeComboBox; 
     private JComboBox<Integer> yearModelComboBox;  
     private JTextField colorField; 
@@ -15,12 +20,15 @@ class RegisterView{
     private JTextField plateField;  
     private JTextField licenseField;  
     private JPasswordField passField;
+    private JTextField regDateField; // New field for registration date
+    private JTextField expDateField;
 
 	public RegisterView(JFrame frame, RegisterController regCon){
 		this.frame = frame;
 		this.regCon = regCon;
 		initRegView();
 	}
+	
 	public void initRegView(){
 		JPanel logPanel = new JPanel();
 		logPanel.setBounds(0,0,400,50);
@@ -39,35 +47,43 @@ class RegisterView{
 		loginLabel.setFont(new Font("Arial", Font.BOLD,20));
 		logPanel.add(loginLabel);
 
+		JLabel usernameLabel = new JLabel("Username:");
+		usernameLabel.setBounds(40,40,100,100);
+		loginPanel.add(usernameLabel);
+
+		userNameField = new JTextField("");
+		userNameField.setBounds(40,100,300,25);
+		loginPanel.add(userNameField);
+
 		JLabel userLabel = new JLabel("Name:");
-		userLabel.setBounds(40,40,100,100);
+		userLabel.setBounds(40,90,100,100);
 		loginPanel.add(userLabel);
 
 		userField = new JTextField("");
-		userField.setBounds(40,100,300,25);
+		userField.setBounds(40,150,300,25);
 		loginPanel.add(userField);
 
 		JLabel passLabel = new JLabel("Password:");
-		passLabel.setBounds(40,90,100,100);
+		passLabel.setBounds(40, 140,100,100);
 		loginPanel.add(passLabel);
 
 		passField = new JPasswordField("");
-		passField.setBounds(40,150,300,25);
+		passField.setBounds(40, 200,300,25);
 		loginPanel.add(passField);
 
 		JLabel vehicleLabel = new JLabel("Vehicle Type:");
-        vehicleLabel.setBounds(40, 165, 100, 50);
+        vehicleLabel.setBounds(40, 215, 100, 50);
         loginPanel.add(vehicleLabel);
 
         // Replace JTextField with JComboBox for Vehicle Type
         String[] vehicleTypes = {"select option", "2 wheels", "4 wheels"};
         vehicleTypeComboBox = new JComboBox<>(vehicleTypes);
-        vehicleTypeComboBox.setBounds(40, 200, 125, 25);
+        vehicleTypeComboBox.setBounds(40, 250, 125, 25);
         loginPanel.add(vehicleTypeComboBox);
 
         // Add JComboBox for Year Model
         JLabel yearModelLabel = new JLabel("Year Model:");
-        yearModelLabel.setBounds(220, 165, 100, 50);
+        yearModelLabel.setBounds(220,215, 100, 50);
         loginPanel.add(yearModelLabel);
 
         Integer[] yearModelOptions = new Integer[2023 - 1990 + 1];
@@ -75,56 +91,56 @@ class RegisterView{
             yearModelOptions[i] = 1990 + i;
         }
         yearModelComboBox = new JComboBox<>(yearModelOptions);
-        yearModelComboBox.setBounds(220, 200, 120, 25);
+        yearModelComboBox.setBounds(220,250, 120, 25);
         loginPanel.add(yearModelComboBox);
 
         JLabel colorLabel = new JLabel("Vehicle Color:");
-        colorLabel.setBounds(40, 215, 100, 50);
+        colorLabel.setBounds(40,265, 100, 50);
         loginPanel.add(colorLabel);
 
         colorField = new JTextField("");
-        colorField.setBounds(40, 250, 125, 25);
+        colorField.setBounds(40, 300, 125, 25);
         loginPanel.add(colorField);
 
 
 		JLabel makeLabel = new JLabel("Make:");
-		makeLabel.setBounds(220,215,100,50);
+		makeLabel.setBounds(220,265,100,50);
 		loginPanel.add(makeLabel);
 
 		makeField = new JTextField("");
-		makeField.setBounds(220,250,120,25);
+		makeField.setBounds(220,300,120,25);
 		loginPanel.add(makeField);
 
 		JLabel orLabel = new JLabel("OR Number:");
-		orLabel.setBounds(40,255,100,100);
+		orLabel.setBounds(40,290,100,100);
 		loginPanel.add(orLabel);
 
 		orField = new JTextField("");
-		orField.setBounds(40,315,300,25);
+		orField.setBounds(40,350,300,25);
 		loginPanel.add(orField);
 
 		JLabel crLabel = new JLabel("CR Number:");
-		crLabel.setBounds(40,315,100,100);
+		crLabel.setBounds(40,340,100,100);
 		loginPanel.add(crLabel);
 
 		crField = new JTextField("");
-		crField.setBounds(40,375,300,25);
+		crField.setBounds(40,400,300,25);
 		loginPanel.add(crField);
 
 		JLabel plateLabel = new JLabel("Plate No:");
-		plateLabel.setBounds(40,375,100,100);
+		plateLabel.setBounds(40,390,100,100);
 		loginPanel.add(plateLabel);
 
 		plateField = new JTextField("");
-		plateField.setBounds(40,435,300,25);
+		plateField.setBounds(40,450,300,25);
 		loginPanel.add(plateField);
 
 		JLabel licenseLabel = new JLabel("License No:");
-		licenseLabel.setBounds(40,435,100,100);
+		licenseLabel.setBounds(40,440,100,100);
 		loginPanel.add(licenseLabel);
 
 		licenseField = new JTextField("");
-		licenseField.setBounds(40,495,300,25);
+		licenseField.setBounds(40,500,300,25);
 		loginPanel.add(licenseField);
 
 		JButton submitBttn = new JButton("submit");
@@ -132,7 +148,8 @@ class RegisterView{
 		submitBttn.setBackground(new Color(248,217,109));
 		submitBttn.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
-
+				
+				String userName = userNameField.getText();
 			    String name = userField.getText();
 		        String vehicleType = (String) vehicleTypeComboBox.getSelectedItem();
 		        int yearModel = (Integer) yearModelComboBox.getSelectedItem();
@@ -143,11 +160,20 @@ class RegisterView{
 		        char[] plateNumber = plateField.getText().toCharArray();
 		        char[] licenseNumber = licenseField.getText().toCharArray();
 		        char[] password = passField.getPassword();
+
+		        Date regDate = new Date();
+		        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		        String formattedRegDate = dateFormat.format(regDate);
+
+		        Calendar expCalendar = Calendar.getInstance();
+		        expCalendar.setTime(regDate);
+		        expCalendar.add(Calendar.YEAR, 1);
+		        String formattedExpDate = dateFormat.format(expCalendar.getTime());
 		        
 
 
 		        // Validate input
-		        if (name.isEmpty() || vehicleType.isEmpty() || make.isEmpty() || yearModel == 0 || color.isEmpty() || orNumber.length == 0 || crNumber.length == 0 || plateNumber.length == 0 || licenseNumber.length == 0 || password.length == 0) {
+		        if (userName.isEmpty() || name.isEmpty() || vehicleType.isEmpty() || make.isEmpty() || yearModel == 0 || color.isEmpty() || orNumber.length == 0 || crNumber.length == 0 || plateNumber.length == 0 || licenseNumber.length == 0 || password.length == 0) {
 		            JOptionPane.showMessageDialog(frame, "Please fill in all fields.", "Error", JOptionPane.ERROR_MESSAGE);
 		            return;
 		        }
@@ -157,21 +183,23 @@ class RegisterView{
 		        
 		        if (result == JOptionPane.YES_OPTION) {
             // Perform registration
-            boolean registrationSuccess = regCon.getReg(name, vehicleType, make, yearModel, color, orNumber, crNumber, plateNumber, licenseNumber, vehicleSticker, password);
+           			 boolean registrationSuccess = regCon.getReg(userName, name, vehicleType, make, yearModel, color, orNumber, crNumber, plateNumber, licenseNumber, vehicleSticker, formattedRegDate, formattedExpDate, password);
 
-            if (registrationSuccess) {
-                // Generate and show vehicle sticker
-                
-                JOptionPane.showMessageDialog(frame, "You are now Registered!\nVehicle Sticker: " + vehicleSticker, "Success", JOptionPane.INFORMATION_MESSAGE);
+            	if (registrationSuccess) {
+			    // Generate and show vehicle sticker
+			    String briefDetails = "Make: " + make + "\nVehicle Type: " + vehicleType + "\nRegistration Date: " + formattedRegDate
+			            + "\nExpiration Date: " + formattedExpDate + "\nVehicle Sticker: " + vehicleSticker;
 
-                // Clear input fields after successful registration
-                clearInputFields();
-            } else {
-                JOptionPane.showMessageDialog(frame, "Registration failed. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
+			    JOptionPane.showMessageDialog(frame, "You are now Registered!\n" + briefDetails, "Success",
+			            JOptionPane.INFORMATION_MESSAGE);
 
-            
-        
+					    // Clear input fields after successful registration
+					    clearInputFields();
+					} else {
+					    JOptionPane.showMessageDialog(frame, "Registration failed. User or vehicle already exists.", "Error",JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+
 
             // Show login after registration attempt
             frame.getContentPane().removeAll();
@@ -199,43 +227,9 @@ class RegisterView{
 		});
 
 	}
-	/*private void handleUserInput() {
-        // Retrieve user input from text fields and combo boxes
-        String name = userField.getText();
-        String vehicleType = (String) vehicleTypeComboBox.getSelectedItem();
-        int yearModel = (Integer) yearModelComboBox.getSelectedItem();
-        String color = colorField.getText();
-        String make = makeField.getText();
-        char[] orNumber = orField.getText().toCharArray();
-		char[] crNumber = crField.getText().toCharArray();
-		char[] plateNumber = plateField.getText().toCharArray();
-		char[] licenseNumber = licenseField.getText().toCharArray();
-		char[] password = "s".toCharArray();
-
-
-        // Print or process the retrieved values (you can modify this part accordingly)
-        if (name.isEmpty() || vehicleType.isEmpty() || make.isEmpty() || orNumber.length == 0 || crNumber.length == 0 || plateNumber.length == 0 || licenseNumber.length == 0 || password.length == 0) {
-    // Rest of your code...
-
-
-            JOptionPane.showMessageDialog(frame, "Please fill in all fields.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        boolean registrationSuccess = regCon.getReg(name,vehicleType, make, orNumber, crNumber,plateNumber, licenseNumber, password); 
-
-        if (registrationSuccess) {
-            JOptionPane.showMessageDialog(frame, "Registration successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(frame, "Registration failed. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-
-
-        frame.getContentPane().removeAll();
-        frame.getContentPane().repaint();
-        regCon.showLogin();
-    }*/
+	
      private void clearInputFields() {
+		userNameField.setText("");
         userField.setText("");
         vehicleTypeComboBox.setSelectedIndex(0);
         yearModelComboBox.setSelectedIndex(0);
@@ -255,6 +249,6 @@ class RegisterView{
 
     // Build the vehicle sticker
     return "VH-" + Character.toUpperCase(firstLetter) + lastTwoDigits;
-}
+	}
 
 }

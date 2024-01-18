@@ -15,7 +15,8 @@ public class ManagementController{
 
 	}
 	public void showLogin(){
-		new VehicleLoginController(frame);
+		login = new VehicleLoginController();
+		login.loginController(frame);
 	}
 	public boolean addRole(String userName, String name, String vehicleType, String make, int yearModel, String color, char[] oR, char[] cR, char[] plateNo, char[] licenseNo, String vehicleSticker, String formattedRegDate, String formattedExpDate, String pass, int roleID){
 		userCon = new UserController();
